@@ -4,10 +4,10 @@
 | Item | Value |
 |---|---|
 | Hackathon | BIOS, Thapar Institute |
-| Screening/submission deadline | _TBD_ |
+| Screening/submission deadline | 2026-10-15, night (deck + video) |
 | Final round dates | _TBD_ |
-| Submission format | _TBD_ (repo? video? deck? deployed link?) |
-| Judging criteria | _TBD_ |
+| Submission format | Screening: 5-slide deck in the official `BIOS_V2_CORE_FRONTIER_Screening_Template.pptx` (kept locally, not in git) + a video |
+| Judging criteria | Not published to us. The template says "we are screening builders, not Shark Tank pitches" and calls slide 4 (Technical Approach) "the most important CORE slide" |
 | Team size / members | see `../04-plan/team.md` |
 
 ## In scope (MVP)
@@ -16,6 +16,8 @@
 - Explainability: top contributing signals in plain English
 - Demo dashboard and a scripted fraud-vs-legit scenario
 - Latency measurement
+
+- Typed challenges: biometric step-up (impostor) vs cooling-off / trusted contact (scam). See `../03-design/risk-engine.md`
 
 ## Stretch
 - Step-up challenge flow (mock OTP) for "challenge" decisions

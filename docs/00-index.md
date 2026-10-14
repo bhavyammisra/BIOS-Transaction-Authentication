@@ -7,10 +7,12 @@
 - `01-problem/scope.md`: hackathon logistics (dates, submission, judging) and our in/out-of-scope list.
 
 ## 02 · Research
-- `02-research/README.md`: research hub; lists research files and the open research questions.
+- `02-research/README.md`: research hub; answers to the open questions and the one-line insight.
+- `02-research/problem-evidence.md`: sourced fraud stats (MHA, RBI, NPCI), the APP-scam shift, friction cost, stakeholders, SDGs.
+- `02-research/methods.md`: hybrid scoring, LightGBM + TreeSHAP, cost-based thresholds, latency, privacy (DPDP).
 - `02-research/signals.md`: catalogue of behaviour, device and transaction signals we could use, with priority.
 - `02-research/datasets.md`: candidate datasets and the synthetic-data plan.
-- `02-research/prior-art.md`: how existing products (3-D Secure, Stripe Radar, etc.) do it, and what we borrow.
+- `02-research/prior-art.md`: static 2FA, commercial engines (Radar, Sift, BioCatch, 3DS), India's tools (NPCI FRM, FRI, MuleHunter), the gap statement, what we borrow.
 
 ## 03 · Design
 - `03-design/architecture.md`: components, request flow, latency budget.
@@ -19,9 +21,10 @@
 - `03-design/decisions.md`: decision log (ADR-lite). Why we chose what we chose.
 
 ## 04 · Plan
-- `04-plan/team.md`: members, roles, GitHub handles, contact.
-- `04-plan/timeline.md`: milestones up to submission.
+- `04-plan/team.md`: members, roll numbers, proposed roles, GitHub handles.
+- `04-plan/timeline.md`: milestones up to submission, plus the hour-by-hour hack build plan.
 - `04-plan/tasks.md`: task board (todo / doing / done with owners).
+- `04-plan/risks-and-metrics.md`: what we'll build in the hack, genuine risks + mitigations, success metrics.
 
 ## 05 · Pitch
 - `05-pitch/README.md`: demo script, deck outline, likely judge Q&A.

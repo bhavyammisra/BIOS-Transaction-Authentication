@@ -5,16 +5,23 @@
 ## Todo
 | Task | Owner | Notes |
 |---|---|---|
-| Fill hackathon logistics in `01-problem/scope.md` | | |
-| Research datasets | | `02-research/datasets.md` |
-| Research prior art | | `02-research/prior-art.md` |
-| Decide stack (D-002) | | |
+| Fill roll numbers + GitHub handles in `team.md` | each member | |
+| Record the BIOS video from the deck | Team | speaker notes are in the deck |
+| Synthetic data generator | Gunagye | `02-research/datasets.md` |
+| Risk engine (features, model, SHAP, policy) | Gunagye | `03-design/risk-engine.md` |
+| API + deploy | Bhavyam | `03-design/api-contract.md`, `architecture.md` |
+| Demo app + SDK | Abhijay | D-007 |
+| Dashboard + metrics | Shefali | `04-plan/risks-and-metrics.md` |
 
 ## Doing
 | Task | Owner | Notes |
 |---|---|---|
+| Screening deck (5 slides, BIOS template) | Bhavyam + Claude | `05-pitch/` |
 
 ## Done
 | Task | Owner | Notes |
 |---|---|---|
 | Repo + docs skeleton | Bhavyam | |
+| Research: evidence, prior art, signals, datasets, methods | Bhavyam + Claude | `02-research/` |
+| Design v1 + decisions D-002…D-008 | Bhavyam + Claude | `03-design/` |
+| Decide stack (D-002) | Bhavyam + Claude | confirm with team |
