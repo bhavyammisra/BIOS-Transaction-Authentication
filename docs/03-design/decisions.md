@@ -7,9 +7,33 @@
 **Why:** Team choice. Clear demoable output (decision + reasons) with strong ML/systems depth.
 **Owner:** Team
 
-## D-002 · _open_ · Tech stack
-**Options:** Python + FastAPI (+ scikit-learn/LightGBM) / Node + Express · Dashboard: React or Streamlit · Deploy: Render / Railway / Vercel / cloud VM
-**Decision:** _TBD_
+## D-002 · 2026-10-15 · Tech stack
+**Decision:** Python 3.11 + **FastAPI** (Pydantic v2) · **LightGBM** + `shap` (TreeSHAP) · profiles in-memory with an optional **Redis** · event log in **Supabase Postgres** (realtime to the dashboard) · dashboard + demo app in **React (Vite) on Vercel** · API as Docker on **Google Cloud Run** (Render fallback).
+**Why:** Fast to build; GBDT p99 ≈ 0.15 ms/txn on one core; the team already knows Supabase/Vercel; Cloud Run gives a real "cloud service" with autoscaling and a public URL.
+**Alternatives:** Node + Express (weaker ML ecosystem); Streamlit dashboard (faster, but can't host the demo payment app nicely).
+**Owner:** Team (proposed by Claude; confirm)
 
-## D-003 · _open_ · Scoring approach (rules vs ML vs hybrid)
-**Decision:** _TBD_
+## D-003 · 2026-10-15 · Scoring approach: hybrid
+**Decision:** Hard rules (policy + fast-path allow) → LightGBM p(fraud), calibrated → TreeSHAP reason codes. **No LLM in the decision path.**
+**Why:** Rules give guaranteed policy and explainability; GBDT weighs many weak signals; LLM scoring is ~1 s and non-deterministic (see `02-research/methods.md`).
+**Alternatives:** rules only (brittle), ML only (no policy guarantees), deep sequence models (no time, harder to explain).
+
+## D-004 · 2026-10-15 · Decision thresholds
+**Decision:** Block at p ≥ 0.90 or a hard rule. Challenge at p ≥ clip(₹500 / amount, 0.05, 0.60), ×0.6 for users aged 70+. Challenge **type** = argmin expected cost given risk type.
+**Why:** Amount-aware thresholds are optimal under instance-dependent costs (Höppner et al. 2020); a high fixed block threshold protects genuine users; typed challenges fix the "OTP doesn't stop coached victims" gap.
+**Alternatives:** fixed score cut-offs like Stripe's 65/75 (ignore amount); blanket delay on ≥ ₹10k (RBI 2026 proposal; too much friction).
+
+## D-005 · 2026-10-15 · Training data
+**Decision:** Calibrated synthetic generator with labelled attack types (IMP, SCAM, BOT, MULE) and hard negatives. IEEE-CIS/PaySim are used only as sanity checks.
+**Why:** No public dataset has behaviour + device + transaction + scam context. Real data would be PII.
+
+## D-006 · 2026-10-15 · Fail-safe policy
+**Decision:** On error or timeout (150 ms internal deadline), return `challenge: standard_2fa`, which falls back to the bank's normal mandated PIN/OTP.
+**Why:** Never fail open (security) and never hard-block on our own outage (customer harm). We are a layer on top of mandated 2FA.
+
+## D-007 · 2026-10-15 · Mobile-only signals in the prototype
+**Decision:** `on_call`, `screen_share`, `sim_change_hours` are simulated with demo toggles. The JS SDK captures the real web signals (typing cadence, dwell, paste, login→pay).
+**Why:** A browser can't read call state. On Android these come from a mobile SDK (as in Google's screen-share alerts in GPay/Paytm). We're honest about this on the slides.
+
+## D-008 · 2026-10-15 · Working product name
+**Decision:** "Pramaan" (प्रमाण, "proof"). Can change.

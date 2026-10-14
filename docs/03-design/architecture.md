@@ -1,38 +1,76 @@
-# Architecture (draft; nothing here is final until it's logged in `decisions.md`)
+# Architecture (v1, 2026-10-15; decisions logged in `decisions.md` D-002…D-008)
+
+> Working name: **Pramaan** (प्रमाण, "proof"). It's a risk-based authentication layer that sits **on top of** mandated 2FA. It never replaces it.
 
 ## Components
 ```
-Client / merchant checkout
-        │  POST /v1/authenticate  (txn + device + behaviour)
-        ▼
-┌──────────────┐   ┌─────────────────────┐   ┌──────────────────┐
-│   API layer  │──▶│ Feature extraction  │──▶│  Scoring         │
-│ (src/api)    │   │ (user history, device│   │ rules + model    │
-└──────┬───────┘   │  profile lookups)   │   └────────┬─────────┘
-       │           └──────────┬──────────┘            │
-       │                      ▼                       ▼
-       │              Profile store (user/device)   Decision + reasons
-       │                                              │
-       └──────────────◀───────────────────────────────┘
-                       │
-                       ▼
-              Event log ──▶ Dashboard (src/dashboard)
+ ┌──────────────────────────────┐
+ │ Client: demo UPI-style app    │  txn + device + session behaviour
+ │ + Pramaan SDK (JS / mobile)   │  (typing cadence, dwell, paste, on-call*, screen-share*, SIM-change*)
+ └──────────────┬───────────────┘   *mobile-only signals: simulated by toggles in the web prototype
+                │ POST /v1/authenticate   (HTTPS, JSON)
+                ▼
+ ┌──────────────────────────────┐      ┌──────────────────────────────────┐
+ │ 1. API layer (FastAPI)        │      │ Profile store (in-memory → Redis) │
+ │    validate · request id ·    │◀────▶│  user baseline: median amt, known │
+ │    timing                     │      │  devices/payees, home geo, hours, │
+ └──────────────┬───────────────┘      │  typing stats · payee reputation   │
+                ▼                       │  (mock FRI / mule list)            │
+ ┌──────────────────────────────┐      └──────────────────────────────────┘
+ │ 2. Feature builder            │  ~25 features: ratios & z-scores vs the user's OWN baseline
+ └──────────────┬───────────────┘
+                ▼
+ ┌──────────────────────────────────────────────────────────────┐
+ │ 3. Risk engine                                                │
+ │   a. Hard rules ── policy overrides (very-high-risk payee, bot │
+ │      combo) and a fast-path allow for clearly normal payments  │
+ │   b. LightGBM model ── p(fraud) in [0,1]                      │
+ │   c. TreeSHAP ── per-signal contributions → reason codes      │
+ │   d. Risk type ── IMPOSTOR / SCAM / BOT / MULE (strongest      │
+ │      signal family)                                           │
+ │   e. Decision policy ── expected-cost, amount-aware:          │
+ │      allow | challenge(type) | block                          │
+ └──────────────┬───────────────────────────────────────────────┘
+                ▼
+   Response: decision · risk_score · risk_type · challenge · reasons[] · latency_ms
+                │
+     ┌──────────┴────────────┐
+     ▼                       ▼
+ Event log (Postgres/       Feedback API  POST /v1/feedback
+ Supabase, realtime)        (analyst or challenge outcome → profile update,
+     │                       labels for retraining)
+     ▼
+ Dashboard (React): live decision feed · "why" panel · latency chart · threshold sliders
 ```
 
 ## Request flow
-1. The API validates the payload (`api-contract.md`).
-2. Features are built: the user's history (median amount, known devices, usual geo) and the session's behaviour.
-3. The risk engine produces a score in [0,1] and per-signal contributions (`risk-engine.md`).
-4. Thresholds map the score to allow / challenge / block. Hard rules can override (e.g. block on a known-bad device).
-5. The response is returned. The event is logged for the dashboard and the feedback loop.
+1. The SDK collects context and the client calls `/v1/authenticate` **before** the normal PIN/OTP step.
+2. The API validates the payload (`api-contract.md`) and starts a timer.
+3. The feature builder loads the user/device/payee profile and computes features against the user's **own** history.
+4. Hard rules run first. A hit can force block/challenge or fast-path allow.
+5. LightGBM → p(fraud). TreeSHAP gives each feature's contribution. Contributions are grouped by signal family to get the **risk type**.
+6. The decision policy minimises expected cost for this amount, which picks allow / challenge / block. The challenge **type** is chosen by risk type (see `risk-engine.md`).
+7. The response returns in milliseconds. The event is logged asynchronously and the dashboard updates live. After an allowed payment completes, the profile updates (new payee, rolling median).
+8. **Fail-safe:** if the engine errors or misses its 150 ms internal deadline, the response is `challenge` with `type: standard_2fa`. The payment then goes through the normal mandated PIN/OTP flow, so we never fail *open* and never block a user because of our own outage (D-006).
 
-## Latency budget (target p95 < 100 ms)
+## Latency budget (target p95 < 50 ms server-side; hard deadline 150 ms)
 | Step | Budget |
 |---|---|
-| Validation + parsing | 5 ms |
-| Profile lookups | 20 ms |
-| Scoring + explanation | 30 ms |
-| Network/overhead | remainder |
+| Validation + parsing | 2 ms |
+| Profile lookups (in-memory / Redis) | 5 ms |
+| Feature building | 3 ms |
+| LightGBM + TreeSHAP | 10 ms |
+| Policy + response | 1 ms |
+| Headroom / network | remainder |
 
-## Stack
-_TBD: see decisions.md D-002._
+## Deployment ("cloud authentication service")
+- API: Docker image → **Google Cloud Run** (autoscaling, public HTTPS URL). Render is the fallback.
+- Event log: **Supabase Postgres** (the team already knows it). Realtime channel feeds the dashboard.
+- Dashboard + demo app: React (Vite) on **Vercel**.
+- Model artefact (`model.txt` + feature list + version) ships inside the image. `model_version` is in every response.
+
+## Scaling story (for judges)
+The API is stateless, and the state lives in the profile store, so we scale horizontally behind Cloud Run. UPI averages ~9,300 txns/sec (Sept 2026). A GBDT scores in < 1 ms per core, so the bottleneck is profile I/O, which Redis handles at this scale.
+
+## Privacy by design
+We store derived features only (typing *statistics*, not keystrokes), salted-hash device IDs, a profile retention window, and an audit log of every decision and its reasons (DPDP Act 2023; consent obligations from 13 Nov 2026).
