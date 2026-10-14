@@ -3,6 +3,8 @@
 > You are working in the shared repo of team **Caffeinated Nerds** for the **BIOS Hackathon (Thapar)**.
 > Problem: **Fast and Secure Online Transaction Authentication**. We're building a real-time risk service that returns **allow / challenge / block** for a transaction and explains the signals behind the decision.
 
+> **Not set up yet?** (no clone, no git identity, or a new teammate) → follow [`SETUP.md`](SETUP.md) first.
+
 ## 0. Rule #1: sync before anything else
 
 A `SessionStart` hook in `.claude/settings.json` runs `git pull --rebase --autostash` automatically.
@@ -38,6 +40,7 @@ CLAUDE.md            ← you are here (agent entry point)
 STATUS.md            ← live project state: read every session, update after meaningful work
 README.md            ← human overview + quickstart
 CONTRIBUTING.md      ← git workflow (HTTPS, no SSH), commit style
+SETUP.md             ← step-by-step onboarding that Claude runs for new teammates
 docs/
   00-index.md        ← one-line summary of every doc (keep updated!)
   01-problem/        ← official statement, scope, judging

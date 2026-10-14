@@ -1,13 +1,15 @@
 # Contributing (HTTPS only, no SSH needed)
 
 ## One-time setup
+**Easiest:** ask Claude to follow [`SETUP.md`](SETUP.md) (see the prompt at the top of the README). The manual steps are below.
+
 1. Accept the collaborator invite from **bhavyammisra**. Check your email, or go to github.com/notifications.
 2. Install **Git for Windows** (https://git-scm.com). It includes Git Credential Manager, so the first push opens a browser window to sign in to GitHub. No SSH keys or tokens are needed.
    - Not comfortable with the CLI? **GitHub Desktop** works just as well.
 3. Clone with HTTPS into your hackathon folder:
    ```bash
-   git clone https://github.com/bhavyammisra/bios-caffeinated-nerds.git
-   cd bios-caffeinated-nerds
+   git clone https://github.com/bhavyammisra/BIOS-Transaction-Authentication.git
+   cd BIOS-Transaction-Authentication
    git config user.name  "Your Name"
    git config user.email "you@example.com"
    ```

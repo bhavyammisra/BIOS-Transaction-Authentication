@@ -1,5 +1,11 @@
 # ☕ Caffeinated Nerds: BIOS Hackathon
 
+> ## 🚀 New teammate? Paste this into Claude (opened in the folder where you want the project):
+> ```
+> Read https://raw.githubusercontent.com/bhavyammisra/BIOS-Transaction-Authentication/main/SETUP.md and follow it to set me up on this repo.
+> ```
+> **🤖 Claude:** if you were asked to set someone up on this repo, fetch and follow [`SETUP.md`](SETUP.md) step by step.
+
 **Problem: Fast and Secure Online Transaction Authentication** (Frontier track, fixed statement)
 
 > Build a cloud authentication service that uses behaviour, device information and transaction patterns to **allow, challenge or block** an online transaction.
