@@ -12,6 +12,20 @@ A `SessionStart` hook in `.claude/settings.json` runs `git pull --rebase --autos
 - If the hook didn't run (no pull output in context), run `git pull --rebase --autostash` yourself first.
 - Before finishing any task that changed files: `git add -A && git commit -m "<type>: <what>" && git pull --rebase && git push`. See `CONTRIBUTING.md` for commit types.
 
+### Auto-push policy (when to push without asking)
+
+Sync command: `git add -A && git commit -m "<type>: <what>" && git pull --rebase && git push`
+
+| Situation | What to do |
+|---|---|
+| **Docs work** (anything in `docs/`, `STATUS.md`, `README.md`, `CLAUDE.md`, `CONTRIBUTING.md`, `src/*/README.md`) | **Always push** as soon as the edit is done, even small edits. Never leave docs changes unpushed. |
+| **Task complete** (code works, tests pass if there are any, `STATUS.md`/task board updated) | **Commit and push automatically.** No need to ask. |
+| **Task not complete** (half-done code, failing tests, still mid-change) | **Don't push.** Commit locally if useful, or leave the changes; push when the task is finished. Push any docs edits from the session separately. |
+| **Needs approval** (deleting or rewriting a teammate's files, changing a decision in `decisions.md`, big code change that per `CONTRIBUTING.md` belongs on a branch/PR, touching secrets/config, force-push, or the user said "wait") | **Stop and ask the user** before pushing. Say what will be pushed and why it needs approval. |
+
+- If the push fails (conflict, auth, rejected), tell the user right away. Never force-push.
+- After pushing, say in one line what was pushed.
+
 ## 1. Read in this order (save context, don't read everything)
 
 1. **`STATUS.md`**: where the project is right now, who's doing what, and what's next. **Always read it.**
