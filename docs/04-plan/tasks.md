@@ -7,11 +7,11 @@
 |---|---|---|
 | Fill roll numbers + GitHub handles in `team.md` | each member | |
 | Record the BIOS video from the deck | Team | speaker notes are in the deck |
-| Synthetic data generator | Gunagye | `02-research/datasets.md` |
-| Risk engine (features, model, SHAP, policy) | Gunagye | `03-design/risk-engine.md` |
-| API + deploy | Bhavyam | `03-design/api-contract.md`, `architecture.md` |
-| Demo app + SDK | Abhijay | D-007 |
-| Dashboard + metrics | Shefali | `04-plan/risks-and-metrics.md` |
+| Synthetic data generator | | `02-research/datasets.md` |
+| Risk engine (features, model, SHAP, policy) | | `03-design/risk-engine.md` |
+| API + deploy | | `03-design/api-contract.md`, `architecture.md` |
+| Demo app + SDK | | D-007 |
+| Dashboard + metrics | | `04-plan/risks-and-metrics.md` |
 
 ## Doing
 | Task | Owner | Notes |

@@ -21,9 +21,9 @@
 - `03-design/decisions.md`: decision log (ADR-lite). Why we chose what we chose.
 
 ## 04 · Plan
-- `04-plan/team.md`: members, roll numbers, proposed roles, GitHub handles.
+- `04-plan/team.md`: members, roll numbers, GitHub handles.
 - `04-plan/timeline.md`: milestones up to submission, plus the hour-by-hour hack build plan.
-- `04-plan/tasks.md`: task board (todo / doing / done with owners).
+- `04-plan/tasks.md`: task board (todo / doing / done).
 - `04-plan/risks-and-metrics.md`: what we'll build in the hack, genuine risks + mitigations, success metrics.
 
 ## 05 · Pitch

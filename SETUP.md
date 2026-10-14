@@ -42,7 +42,7 @@ git config --global --add safe.directory "<absolute path of the repo, using forw
 ```
 
 ## Step 4 · Add themselves to the team and test push access
-1. In `docs/04-plan/team.md`, replace the first `_teammate_` row with their name, `@github-username`, and role "_TBD_".
+1. In `docs/04-plan/team.md`, fill in their roll number and `@github-username` on their row (add a row if missing).
 2. Commit and push:
    ```bash
    git add docs/04-plan/team.md

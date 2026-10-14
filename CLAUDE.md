@@ -1,83 +1,28 @@
 # CLAUDE.md — Caffeinated Nerds · BIOS Hackathon
 
-> You are working in the shared repo of team **Caffeinated Nerds** for the **BIOS Hackathon (Thapar)**.
-> Problem: **Fast and Secure Online Transaction Authentication**. We're building a real-time risk service that returns **allow / challenge / block** for a transaction and explains the signals behind the decision.
+Problem: **Fast and Secure Online Transaction Authentication**. We're building a real-time risk service that returns **allow / challenge / block** for a transaction, with reasons.
 
-> **Not set up yet?** (no clone, no git identity, or a new teammate) → follow [`SETUP.md`](SETUP.md) first.
+New teammate or no git identity → follow [`SETUP.md`](SETUP.md).
 
-## 0. Rule #1: sync before anything else
+## Sync
+- The `SessionStart` hook runs `git pull --rebase --autostash`. If it failed or shows a conflict, tell the user before anything else. If it didn't run, pull yourself.
+- Push with: `git add -A && git commit -m "<type>: <what>" && git pull --rebase && git push` (prefixes in `CONTRIBUTING.md`).
 
-A `SessionStart` hook in `.claude/settings.json` runs `git pull --rebase --autostash` automatically.
-- Check its output at the start of the session. If it **failed** or shows a **merge conflict**, tell the user right away and help resolve it before doing other work.
-- If the hook didn't run (no pull output in context), run `git pull --rebase --autostash` yourself first.
-- Before finishing any task that changed files: `git add -A && git commit -m "<type>: <what>" && git pull --rebase && git push`. See `CONTRIBUTING.md` for commit types.
+## When to push
+- **Docs** (`docs/`, `*.md`, `src/*/README.md`): push right after every edit.
+- **Task complete** (works, tests pass): push automatically.
+- **Task incomplete**: don't push yet; still push any docs edits.
+- **Needs approval** — ask first: deleting/rewriting a teammate's work, changing a decision, big code change (use a branch), secrets/config, or the user said wait.
+- Never force-push. Report failures immediately; after pushing, say what went up in one line.
 
-### Auto-push policy (when to push without asking)
+## Where to look
+- Always read `STATUS.md` first, then `docs/00-index.md` to pick which docs to open.
+- Problem/scope → `docs/01-problem/` · research → `docs/02-research/` · design, API, risk engine, decisions → `docs/03-design/` · plan, tasks → `docs/04-plan/` · pitch → `docs/05-pitch/` · code → `src/README.md`.
 
-Sync command: `git add -A && git commit -m "<type>: <what>" && git pull --rebase && git push`
-
-| Situation | What to do |
-|---|---|
-| **Docs work** (anything in `docs/`, `STATUS.md`, `README.md`, `CLAUDE.md`, `CONTRIBUTING.md`, `src/*/README.md`) | **Always push** as soon as the edit is done, even small edits. Never leave docs changes unpushed. |
-| **Task complete** (code works, tests pass if there are any, `STATUS.md`/task board updated) | **Commit and push automatically.** No need to ask. |
-| **Task not complete** (half-done code, failing tests, still mid-change) | **Don't push.** Commit locally if useful, or leave the changes; push when the task is finished. Push any docs edits from the session separately. |
-| **Needs approval** (deleting or rewriting a teammate's files, changing a decision in `decisions.md`, big code change that per `CONTRIBUTING.md` belongs on a branch/PR, touching secrets/config, force-push, or the user said "wait") | **Stop and ask the user** before pushing. Say what will be pushed and why it needs approval. |
-
-- If the push fails (conflict, auth, rejected), tell the user right away. Never force-push.
-- After pushing, say in one line what was pushed.
-
-## 1. Read in this order (save context, don't read everything)
-
-1. **`STATUS.md`**: where the project is right now, who's doing what, and what's next. **Always read it.**
-2. **`docs/00-index.md`**: a one-line summary of every doc. Use it to choose which files to open.
-3. Open only the docs your task needs. Use the routing table below.
-
-## 2. Routing table: task → files
-
-| If the task is about…                         | Read                                                        |
-|-----------------------------------------------|-------------------------------------------------------------|
-| What the problem asks / judging / scope        | `docs/01-problem/problem-statement.md`, `docs/01-problem/scope.md` |
-| Fraud signals, datasets, existing solutions     | `docs/02-research/` (start with its `README.md`)            |
-| System design, components, data flow           | `docs/03-design/architecture.md`                            |
-| API request/response shape                     | `docs/03-design/api-contract.md`                            |
-| How the risk score / decision is computed      | `docs/03-design/risk-engine.md`                             |
-| Why something was decided                      | `docs/03-design/decisions.md`                               |
-| Who owns what, deadlines, task list            | `docs/04-plan/`                                             |
-| Demo, pitch, deck                              | `docs/05-pitch/`                                            |
-| Writing or changing code                       | `src/README.md`, then the folder's own `README.md`          |
-| Running / testing                              | `README.md` (Quickstart), `tests/README.md`                 |
-
-## 3. Repo map
-
-```
-CLAUDE.md            ← you are here (agent entry point)
-STATUS.md            ← live project state: read every session, update after meaningful work
-README.md            ← human overview + quickstart
-CONTRIBUTING.md      ← git workflow (HTTPS, no SSH), commit style
-SETUP.md             ← step-by-step onboarding that Claude runs for new teammates
-docs/
-  00-index.md        ← one-line summary of every doc (keep updated!)
-  01-problem/        ← official statement, scope, judging
-  02-research/       ← signals, datasets, prior art
-  03-design/         ← architecture, API contract, risk engine, decision log
-  04-plan/           ← team roles, timeline, task board
-  05-pitch/          ← demo script, deck notes, Q&A prep
-src/
-  api/               ← HTTP service exposing /v1/authenticate
-  risk_engine/       ← feature extraction + scoring + explanations
-  dashboard/         ← demo UI: live decisions + "why" panel
-data/                ← sample/synthetic data (raw data is git-ignored)
-tests/               ← unit + scenario tests
-scripts/             ← data generation, load testing, helpers
-```
-
-## 4. House rules for agents
-
-- **Docs are the source of truth.** If code and docs disagree, flag it to the user. Don't silently "fix" either one.
-- **Keep the index in sync.** If you add, rename or delete a doc, update `docs/00-index.md` in the same commit.
-- **Record decisions.** For any non-trivial choice (stack, model, threshold, scope cut), append an entry to `docs/03-design/decisions.md`.
-- **Update `STATUS.md`** at the end of meaningful work: what changed, what's next, and any blockers.
-- **Small, focused docs.** If a doc grows past roughly 200 lines, split it and link the parts from the index.
-- **No secrets in the repo.** Use `.env` (git-ignored) and document keys in `.env.example`.
-- **Don't rewrite teammates' docs wholesale.** Make additive edits, and note open disagreements under "Open questions".
-- Each `src/*` folder has a `README.md` describing its purpose, entry point and interfaces. Keep it current when you change code there.
+## Rules
+- Keep docs short and concise; no filler.
+- Docs are the source of truth. If code and docs disagree, flag it.
+- Adding/renaming a doc → update `docs/00-index.md` in the same commit.
+- Non-trivial choices → append to `docs/03-design/decisions.md`.
+- Update `STATUS.md` after meaningful work.
+- No secrets in the repo (`.env` is git-ignored; list keys in `.env.example`).
