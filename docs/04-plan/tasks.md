@@ -16,7 +16,7 @@
 ## Doing
 | Task | Owner | Notes |
 |---|---|---|
-| Screening deck (5 slides, BIOS template) | Bhavyam + Claude | `05-pitch/` |
+| Submit deck + video | Team | fill Challenge ID + roll nos first |
 
 ## Done
 | Task | Owner | Notes |
@@ -25,3 +25,4 @@
 | Research: evidence, prior art, signals, datasets, methods | Bhavyam + Claude | `02-research/` |
 | Design v1 + decisions D-002…D-008 | Bhavyam + Claude | `03-design/` |
 | Decide stack (D-002) | Bhavyam + Claude | confirm with team |
+| Screening deck (5 slides, BIOS template) | Bhavyam + Claude | `05-pitch/Pramaan_BIOS_Screening.pptx` |

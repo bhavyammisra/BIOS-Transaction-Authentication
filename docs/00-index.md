@@ -27,4 +27,5 @@
 - `04-plan/risks-and-metrics.md`: what we'll build in the hack, genuine risks + mitigations, success metrics.
 
 ## 05 · Pitch
-- `05-pitch/README.md`: demo script, deck outline, likely judge Q&A.
+- `05-pitch/README.md`: screening deck guide (slide-by-slide), video plan, demo script, judge Q&A with answers.
+- `05-pitch/Pramaan_BIOS_Screening.pptx`: the submitted 5-slide screening deck (BIOS template), with speaker notes. `.pdf` is a preview.
