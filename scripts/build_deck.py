@@ -37,7 +37,7 @@ def _apply_font(run, size, bold=False, italic=False, color=TEXT, font=BODY):
     f.size = Pt(size); f.bold = bold; f.italic = italic; f.name = font
     f.color.rgb = rgb(color)
 
-def add_par(tf, runs, align=PP_ALIGN.LEFT, space_after=0, space_before=0, bullet=False, first=False, line_spacing=None):
+def add_par(tf, runs, align=PP_ALIGN.JUSTIFY, space_after=0, space_before=0, bullet=False, first=False, line_spacing=None):
     """runs: list of (text, size, bold, color[, italic[, font]])"""
     p = tf.paragraphs[0] if first else tf.add_paragraph()
     p.alignment = align
@@ -128,7 +128,7 @@ def slide1(s):
     st, tf = box(s, 4.15, 0.66, 8.7, 0.9, "Team strip", fill=PANEL, radius=0.12, pad=0.12)
     add_par(tf, [("Team Caffeinated Nerds", 11.5, True, NAVY), ("   ·   Challenge: ", 11, False, NAVY), ("Frontier · PS-04", 11, True, NAVY), (" · Fast and Secure Online Transaction Authentication", 11, False, NAVY)], first=True)
     for i, (name, roll) in enumerate([("Bhavyam Misra", "1024030535"), ("Gunagye Jain", "1024030019"),
-                                      ("Abhijay Nagal", "______________"), ("Shefali Sharma", "1024030284")]):
+                                      ("Abhijay Nagal", "1024170013"), ("Shefali Sharma", "1024030284")]):
         tb, ttf = textbox(s, 4.27 + i * 2.13, 1.01, 2.05, 0.45, f"Member {i+1}")
         add_par(ttf, [(name, 10.5, True, TEXT)], first=True)
         add_par(ttf, [("Roll No: " + roll, 10, False, MUTED)])
@@ -136,10 +136,10 @@ def slide1(s):
     # left column: problem / stakeholder / why
     tb, tf = textbox(s, 0.5, 2.82, 6.75, 3.6, "Problem text")
     label(tf, "PROBLEM", first=True)
-    add_par(tf, [("Every online payment gets the same static PIN/OTP check. It proves ", 13, False, TEXT),
-                 ("who holds the credential", 13, True, TEXT), (", not whether ", 13, False, TEXT),
-                 ("this payment is normal for this person, right now", 13, True, TEXT),
-                 (". Scam victims type their own OTP while a fraudster coaches them; SIM-swappers intercept it.", 13, False, TEXT)], space_after=10)
+    add_par(tf, [("Asha, 72, gets a call from a fake “CBI officer”, opens UPI on her own phone and types her own PIN: ", 13, False, TEXT),
+                 ("approved", 13, True, RED), (", and ₹85,000 goes to a scammer. A static PIN/OTP proves ", 13, False, TEXT),
+                 ("who you are", 13, True, TEXT), ("; nobody checks ", 13, False, TEXT),
+                 ("what's happening", 13, True, TEXT), (" (a call in progress, a pasted new payee, a SIM swapped yesterday).", 13, False, TEXT)], space_after=10)
     label(tf, "TARGET STAKEHOLDER")
     add_par(tf, [("Banks, UPI apps & payment gateways", 13, True, TEXT),
                  (" that must allow / challenge / block within UPI's 15-second window, on behalf of everyday users, especially ", 13, False, TEXT),
@@ -174,6 +174,8 @@ def slide1(s):
         x += 4.175
     sources(s, "Sources: MHA/NCRP data via Parliament replies (2024, 2025); RBI Discussion Paper on safeguards in digital payments, 9 Apr 2026; RBI Authentication Directions, 25 Sep 2025. Links: repo › docs/02-research/problem-evidence.md")
     notes(s, "We're team Caffeinated Nerds, on the Frontier challenge: Fast and Secure Online Transaction Authentication. "
+             "Meet Asha. She's 72. A fake CBI officer calls and pressures her to pay. She opens UPI on her own phone, enters her own PIN, and the payment is approved. "
+             "A PIN checks who you are. Nobody checks what's happening. "
              "Today every online payment in India gets the same check, a PIN or an OTP. That proves who holds the credential, but not whether this payment makes sense right now. "
              "And fraud has moved. In April 2026 the RBI said account-takeover fraud is now negligible. Most fraud is authorised push payment: the real user, on their own phone, types their own OTP while a scammer coaches them. "
              "Indians lost about 22,500 crore rupees to cyber fraud in 2025, and around 85 percent of that came from investment and digital-arrest scams. "
@@ -220,7 +222,7 @@ def slide2(s):
 # ---------------------------------------------------------------- slide 3
 def slide3(s):
     strip_instructions(s)
-    heading(s, headline="> Pramaan: OTP checks the person. We check the situation.")
+    heading(s, headline="> Pramaan: a PIN checks who you are. We check what's happening, before every payment.")
     tb, tf = textbox(s, 0.5, 2.8, 5.75, 4.3, "Solution text")
     label(tf, "WHAT WE BUILD", first=True)
     add_par(tf, [("A cloud risk API that banks and UPI apps call ", 13, False, TEXT), ("before", 13, True, TEXT),
@@ -230,20 +232,20 @@ def slide3(s):
     for t in [("20+ signals", " (behaviour, device, transaction, receiver) scored against each user's own history"),
               ("Hybrid engine:", " policy rules + gradient-boosted model, with each signal's contribution explained"),
               ("Amount-aware:", " a ₹40 tea is never stopped; an ₹85k first-time transfer is checked closely"),
-              ("4 levels of response:", " allow · fingerprint for a likely impostor · pause + family approval for a likely scam victim · block")]:
+              ("4 levels of response:", " allow · fingerprint for a likely impostor · 30-min hold, scam warning + trusted contact for a likely scam victim · block")]:
         add_par(tf, [(t[0], 12.5, True, TEXT), (t[1], 12.5, False, TEXT)], bullet=True, space_after=3)
     label(tf, "WHY THIS CLOSES THE GAP", space_before=6)
     add_par(tf, [("An OTP can't stop someone who is being coached. A pause and a family member who can cancel can. We use them ", 12.5, False, TEXT),
-                 ("only", 12.5, True, TEXT), (" when the context is risky, unlike RBI's proposed blanket 1-hour delay. Built on free, open tools: ", 12.5, False, TEXT),
+                 ("only", 12.5, True, TEXT), (" when the context is risky, unlike RBI's proposed blanket 1-hour delay: honest payments stay instant, risky ones get stopped. Free, open tools: ", 12.5, False, TEXT),
                  ("₹0 running cost", 12.5, True, TEXT), (".", 12.5, False, TEXT)])
 
     # right: user interaction table
     tb, tf = textbox(s, 6.55, 2.8, 6.3, 0.3, "Scenarios label")
     label(tf, "USER INTERACTION: 4 levels · the same ₹85,000 payment, four situations", first=True)
-    rows = [("Usual payee, own phone, normal typing", "① ALLOW", GREEN, GREEN_T, "No extra step. Pays instantly."),
-            ("New phone, SIM swapped 20 h ago, new city", "② FINGERPRINT", AMBER, AMBER_T, "Impostor risk: owner's passkey biometric needed."),
-            ("On a call, new UPI ID pasted, own phone", "③ PAUSE + FAMILY", AMBER, AMBER_T, "Scam risk: held; son taps Cancel on Telegram"),
-            ("Emulator + VPN, 15 attempts in 10 minutes", "④ BLOCK", RED, RED_T, "Bot / card-testing: stopped, analyst alerted.")]
+    rows = [("Usual payee, own phone, normal typing", "① ALLOW", GREEN, GREEN_T, "Risk 0.04 · pays instantly, no extra step"),
+            ("New phone, SIM swapped 20 h ago, new city", "② BIOMETRIC", AMBER, AMBER_T, "Risk 0.58 · impostor: owner's fingerprint"),
+            ("On a call, new UPI ID pasted, own phone", "③ HOLD + CONTACT", AMBER, AMBER_T, "Risk 0.71 · scam: 30-min hold, son cancels"),
+            ("Emulator + VPN, 15 attempts in 10 minutes", "④ BLOCK", RED, RED_T, "Risk 0.97 · bot: blocked, analyst alerted")]
     y = 3.13
     for i, (ctx, dec, col, tint, why) in enumerate(rows):
         b, tf = box(s, 6.55, y, 6.3, 0.78, f"Scenario {i+1}", fill=tint, radius=0.1, pad=0.13, anchor=MSO_ANCHOR.MIDDLE)
@@ -252,15 +254,16 @@ def slide3(s):
         add_par(tf, [(why, 11, False, MUTED)])
         pill(s, 10.25, y + 0.16, 2.5, 0.46, f"Decision {i+1}", dec, col, size=11.5)
         y += 0.87
-    b, tf = box(s, 6.55, y + 0.03, 6.3, 0.45, "Analyst note", fill=PANEL, radius=0.15, pad=0.13, anchor=MSO_ANCHOR.MIDDLE)
-    add_par(tf, [("Analysts", 11.5, True, NAVY), (" see every decision live with its “why”; their feedback retrains the model.", 11.5, False, TEXT)], first=True)
+    b, tf = box(s, 6.55, y + 0.03, 6.3, 0.6, "Analyst note", fill=PANEL, radius=0.12, pad=0.13, anchor=MSO_ANCHOR.MIDDLE)
+    add_par(tf, [("Analyst console:", 11, True, NAVY), (" every decision live with its “why” (on a call +0.31, pasted new UPI ID +0.24, 6× usual amount +0.13); feedback retrains the model.", 11, False, TEXT)], first=True)
     notes(s, "Our solution is Pramaan, which means proof. It's a cloud risk API that a bank or UPI app calls just before the PIN or OTP step. "
              "It scores more than 20 signals against the user's own history and returns allow, challenge or block in milliseconds, with reasons in plain language. "
              "Two things make it different. First, thresholds depend on the amount: a 40-rupee tea is never stopped, an 85,000-rupee first-time transfer is checked closely. "
              "Second, the challenge depends on the kind of risk. Look at the same 85,000-rupee payment in four situations. Usual payee, own phone: allowed. "
              "New phone and a SIM swap yesterday: that's an impostor, so we ask for the owner's fingerprint. "
-             "Own phone at home, but on a call and pasting a new UPI ID: that's a coached victim. An OTP won't help, so we pause it and her son gets an Approve or Cancel message on Telegram. "
-             "An emulator firing 15 attempts: blocked.")
+             "Own phone at home, but on a call and pasting a new UPI ID: that's a coached victim. An OTP won't help, so we pause it for 30 minutes with a scam warning, and her son Rohan gets an Approve or Cancel message on Telegram. He taps Cancel and the money is safe. "
+             "An emulator firing 15 attempts in 10 minutes: blocked. "
+             "Every decision comes with a clear reason in the analyst console, and analyst feedback keeps the model learning.")
 
 # ---------------------------------------------------------------- slide 4
 def slide4(s):
@@ -303,7 +306,7 @@ def slide4(s):
     for txt, col in (("ALLOW", GREEN), ("CHALLENGE (type)", AMBER), ("BLOCK", RED)):
         add_par(tf, [(txt, 11.5, True, col)], space_after=1)
     add_par(tf, [("+ score, top-3 reasons, latency", 10.5, False, TEXT)], space_before=4)
-    add_par(tf, [("Holds → n8n → family on Telegram", 10.5, True, NAVY)], space_before=3)
+    add_par(tf, [("Holds → n8n → trusted contact on Telegram", 10.5, True, NAVY)], space_before=3)
     # arrows main flow
     mid = top + 0.75
     arrow(s, 2.5, mid, 2.83, mid, "A1"); arrow(s, 4.63, mid, 4.96, mid, "A2")
@@ -374,10 +377,10 @@ def slide5(s):
         first = False
     # col 3
     b, tf = box(s, 8.88, 3.32, 3.97, 0.78, "Impact lead", fill=PANEL, radius=0.08, pad=0.15, anchor=MSO_ANCHOR.MIDDLE)
-    add_par(tf, [("For banks & UPI apps: ", 11.5, True, NAVY), ("stop the scams OTP can't, without slowing down honest users.", 11.5, False, TEXT)], first=True)
+    add_par(tf, [("Honest payments stay instant. ", 11.5, True, NAVY), ("Only risky ones are stopped: the scams OTP can't catch.", 11.5, False, TEXT)], first=True)
     mets = [("≥ 80%", "of scam-type fraud caught while ≤ 5% of legit payments are challenged (OTP-only: ~0%)"),
             ("≥ 90%", "of legit ₹10k+ transfers pass with no delay (a blanket 1-hour rule delays 100%)"),
-            ("< 50 ms", "p95 decision latency, well inside UPI's 15 s window")]
+            ("< 50 ms", "p95 decision latency, well inside UPI's 15-second window")]
     y = 4.2
     for i, (big, small) in enumerate(mets):
         b, tf = box(s, 8.88, y, 3.97, 0.8, f"Metric {i+1}", fill=WHITE, line=ICE, radius=0.1, pad=0.12, anchor=MSO_ANCHOR.MIDDLE)
@@ -387,7 +390,7 @@ def slide5(s):
         add_par(ttf, [(big, 20, True, GREEN, False, HEAD)], first=True, align=PP_ALIGN.CENTER)
         y += 0.88
     tb, tf = textbox(s, 8.88, 6.85, 3.97, 0.35, "Metric note")
-    add_par(tf, [("Targets, measured live on the dashboard against held-out synthetic data.", 10, False, MUTED, True)], first=True)
+    add_par(tf, [("Fast. Secure. Explained. Targets measured live on held-out synthetic data.", 10, False, MUTED, True)], first=True)
     notes(s, "What we'll actually build in the hack: a live authenticate API on a free host, the full risk engine, all four response levels working, including a real passkey fingerprint check and an n8n plus Telegram loop where a family member can cancel a held payment, a dashboard, and a replay simulator comparing us with RBI's blanket delay. All on free tools, zero running cost. "
              "We're honest about the risks. Our data is synthetic, so we add hard negatives, report metrics per attack type and sanity-check on public datasets. "
              "Call and screen-share state needs a mobile SDK, so missing signals count as unknown, never safe. "
@@ -398,7 +401,15 @@ def slide5(s):
 def main(src, out):
     prs = Presentation(src)
     sl = list(prs.slides)
+    for s in sl:
+        for sh in list(s.shapes):
+            if not sh.name.startswith(("Text ", "Shape ")):
+                remove(sh)
     slide1(sl[0]); slide2(sl[1]); slide3(sl[2]); slide4(sl[3]); slide5(sl[4])
+    # justified text leaves wide gaps in the narrow flow boxes, so left-align those
+    for sh in sl[3].shapes:
+        if sh.name.startswith(("D1", "D2", "D3 ", "D5")):
+            for p in sh.text_frame.paragraphs: p.alignment = PP_ALIGN.LEFT
     # tidy "SLIDE X OF 5" box so it stays on the canvas
     for s in sl:
         for sh in s.shapes:
