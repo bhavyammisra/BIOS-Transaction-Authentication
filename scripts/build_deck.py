@@ -126,7 +126,7 @@ def slide1(s):
 
     # team strip (top right, beside the logo)
     st, tf = box(s, 4.15, 0.66, 8.7, 0.9, "Team strip", fill=PANEL, radius=0.12, pad=0.12)
-    add_par(tf, [("Team Caffeinated Nerds", 11.5, True, NAVY), ("   ·   Frontier · Fast and Secure Online Transaction Authentication   ·   Challenge ID: ________", 11, False, NAVY)], first=True)
+    add_par(tf, [("Team Caffeinated Nerds", 11.5, True, NAVY), ("   ·   Challenge: ", 11, False, NAVY), ("Frontier · PS-04", 11, True, NAVY), (" · Fast and Secure Online Transaction Authentication", 11, False, NAVY)], first=True)
     for i, (name, roll) in enumerate([("Bhavyam Misra", "1024030535"), ("Gunagye Jain", "1024030019"),
                                       ("Abhijay Nagal", "______________"), ("Shefali Sharma", "1024030284")]):
         tb, ttf = textbox(s, 4.27 + i * 2.13, 1.01, 2.05, 0.45, f"Member {i+1}")

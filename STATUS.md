@@ -27,4 +27,4 @@ setup → research → design → plan → **`PITCH (screening)`** → build (ha
 
 ## Blockers / open questions
 - Hack dates/duration and judging criteria not published yet.
-- Challenge ID for our statement (Bhavyam to check the portal).
+- Challenge: Frontier mode · PS-04.

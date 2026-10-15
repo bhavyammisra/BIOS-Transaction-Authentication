@@ -1,6 +1,6 @@
 # Problem statement
 
-**Track:** Frontier · Screening statement · **Type:** Fixed
+**Track:** Frontier · **Problem ID:** PS-04 · Screening statement · **Type:** Fixed
 **Title:** Fast and Secure Online Transaction Authentication
 
 ![Official statement](assets/problem-statement.png)
