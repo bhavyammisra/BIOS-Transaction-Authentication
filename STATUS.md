@@ -11,12 +11,13 @@ setup → research → design → plan → **`PITCH (screening)`** → build (ha
 - **Research** (`docs/02-research/`): sourced evidence, prior art and gap, signals v2, datasets, methods. Key insight: RBI says ATO is "now negligible" and most fraud is authorised push payment, so OTP can't stop it.
 - **Design v1** (`docs/03-design/`): architecture, risk engine (hybrid rules + LightGBM + TreeSHAP; amount-aware thresholds; challenge type by risk type), API contract v1, decisions D-002…D-008. Working name **Pramaan**.
 - **Plan** (`docs/04-plan/`): team, hack timeline, tasks, risks & metrics.
+- **Promo video** (60 s, 1080p60, silent) + timed VO script: `promo/` (see `promo/SCRIPT.md`).
 - **Screening deck** built in the BIOS template: `docs/05-pitch/Pramaan_BIOS_Screening.pptx` (+ speaker notes).
 
 ## In progress
 | Who | What |
 |-----|------|
-| Team | Fill Challenge ID + roll numbers on slide 1; record the video; submit tonight |
+| Team | Fill Challenge ID + roll numbers on slide 1; record VO over `promo/Pramaan_Promo_60s.mp4`; submit tonight |
 
 ## Next up
 1. Submit the deck + video (deadline 2026-10-15 night).

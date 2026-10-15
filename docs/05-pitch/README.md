@@ -13,6 +13,9 @@
 | 4 Technical Approach | One API call: context in, explained decision out | Input → API → features → rules + LightGBM + TreeSHAP + cost policy → output |
 | 5 Build Plan, Risks & Impact | Deployed prototype, honest limits | 4 risks + mitigations; metrics: ≥80% scam catch at ≤5% challenge, ≥90% of honest ₹10k+ not delayed, p95 < 50 ms |
 
+## Promo video (60 s)
+- `promo/Pramaan_Promo_60s.mp4`: silent animated promo of the 4 situations; timed VO script in `promo/SCRIPT.md`; source + re-render in `promo/README.md`.
+
 ## Video (record from the deck)
 1. Screen-record the deck in slideshow mode and read each slide's speaker notes (≈ 4–5 min total).
 2. Each person can take one slide and Bhavyam two, or one narrator throughout.

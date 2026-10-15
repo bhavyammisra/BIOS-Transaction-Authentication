@@ -1,0 +1,576 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>Pramaan Promo</title>
+<!-- 60 s promo. Deterministic: render(t) draws the frame at time t (seconds). render.py captures it. -->
+<style>
+:root{--navy:#1E2761;--green:#2E9E4F;--amber:#D9822B;--red:#E0393E;--ice:#CADCFC;--txt:#EEF1FB;--mut:#9AA6C8}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:1920px;height:1080px;overflow:hidden;background:#05081C}
+body{font-family:"Segoe UI Variable Display","Segoe UI",system-ui,sans-serif;color:var(--txt);-webkit-font-smoothing:antialiased;font-variant-numeric:tabular-nums}
+#stage{position:relative;width:1920px;height:1080px;overflow:hidden;background:#060A22}
+.l{position:absolute;will-change:transform,opacity}
+.w{display:inline-block;will-change:transform,opacity}
+b{font-weight:700;color:#fff}
+.kick{font-size:20px;letter-spacing:.32em;text-transform:uppercase;font-weight:600;color:var(--ice)}
+
+/* background */
+#bg{position:absolute;inset:0;background:radial-gradient(ellipse 120% 90% at 50% 110%,#1A2257 0%,#0A0F2E 55%,#050819 100%)}
+.orb{position:absolute;width:1300px;height:1300px;border-radius:50%;left:0;top:0}
+#grid{position:absolute;inset:-64px;background-image:linear-gradient(rgba(202,220,252,.045) 1px,transparent 1px),linear-gradient(90deg,rgba(202,220,252,.045) 1px,transparent 1px);background-size:64px 64px;-webkit-mask-image:radial-gradient(ellipse 70% 70% at 50% 50%,#000 20%,transparent 80%)}
+#vig{position:absolute;inset:0;box-shadow:inset 0 0 260px 40px rgba(0,0,0,.55);pointer-events:none}
+#fade{position:absolute;inset:0;background:#000;z-index:100}
+
+/* glass */
+.glass{background:linear-gradient(180deg,rgba(255,255,255,.075),rgba(255,255,255,.03));border:1px solid rgba(202,220,252,.13);border-radius:24px;box-shadow:0 30px 80px rgba(0,0,0,.35)}
+
+/* phone */
+.phone{width:350px;height:720px;border-radius:56px;background:#0b0d17;padding:11px;box-shadow:0 0 0 2px #2b3258,0 0 0 9px #11142a,0 50px 120px rgba(0,0,0,.65)}
+.screen{position:relative;width:100%;height:100%;border-radius:45px;overflow:hidden;background:#F4F6FC;color:#1b1f33}
+.notch{position:absolute;top:10px;left:50%;width:104px;height:28px;margin-left:-52px;border-radius:16px;background:#000;z-index:20}
+.scr{position:absolute;inset:0;overflow:hidden}
+.sbar{position:absolute;top:0;left:0;right:0;height:44px;display:flex;justify-content:space-between;align-items:center;padding:6px 30px 0;font-size:15px;font-weight:600}
+.batt{display:inline-block;width:24px;height:12px;border:1.6px solid currentColor;border-radius:3px;position:relative;vertical-align:-1px;margin-left:6px}
+.batt:after{content:"";position:absolute;left:1.5px;top:1.5px;bottom:1.5px;width:70%;background:currentColor;border-radius:1px}
+.callpill{position:absolute;top:48px;left:50%;transform:translateX(-50%);background:#22A447;color:#fff;font-size:14px;font-weight:600;padding:6px 14px;border-radius:20px;white-space:nowrap;display:flex;gap:8px;align-items:center}
+.callpill i{width:8px;height:8px;border-radius:50%;background:#fff;display:inline-block}
+.phead{position:absolute;top:84px;left:24px;right:24px;display:flex;align-items:center;gap:10px;font-size:19px;font-weight:700;color:#1E2761}
+.phead .up{margin-left:auto;font-size:13px;font-weight:700;color:#fff;background:#1E2761;padding:3px 9px;border-radius:7px;letter-spacing:.04em}
+.av{position:absolute;top:128px;left:50%;margin-left:-32px;width:64px;height:64px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:24px}
+.pname{position:absolute;top:202px;left:0;right:0;text-align:center;font-size:20px;font-weight:700}
+.pupi{position:absolute;top:232px;left:0;right:0;text-align:center;font-size:15px;color:#5A6275}
+.ptag{position:absolute;top:262px;left:50%;transform:translateX(-50%);font-size:13px;font-weight:700;padding:4px 12px;border-radius:12px;white-space:nowrap}
+.pamt{position:absolute;top:298px;left:0;right:0;text-align:center;font-size:52px;font-weight:800;letter-spacing:-.01em;color:#141832}
+.pnote{position:absolute;top:372px;left:0;right:0;text-align:center;font-size:14px;color:#7A8299}
+.pbtn{position:absolute;left:24px;right:24px;top:612px;height:56px;border-radius:16px;background:#1E2761;color:#fff;font-size:19px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:8px}
+.chk{position:absolute;left:24px;right:24px;top:540px;font-size:14px;color:#1E2761;font-weight:600}
+.chk .bar{height:6px;border-radius:3px;background:#DDE3F3;overflow:hidden;margin-top:8px}
+.chk .bar i{display:block;height:100%;width:100%;background:linear-gradient(90deg,#4C6FFF,#9DB4FF);transform-origin:left}
+.ov{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:0 26px;color:#fff}
+.ov .big{width:128px;height:128px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin-bottom:26px}
+.ov h3{font-size:28px;font-weight:800;line-height:1.15}
+.ov p{font-size:16px;opacity:.9;margin-top:10px;line-height:1.4}
+.tap{position:absolute;width:70px;height:70px;margin:-35px 0 0 -35px;border-radius:50%;background:rgba(76,111,255,.35);border:2px solid rgba(76,111,255,.8);z-index:30}
+
+/* hook call screen */
+.callscr{background:linear-gradient(180deg,#1b2140,#0b0e1f);color:#fff}
+.ring{position:absolute;left:50%;top:230px;width:120px;height:120px;margin:-60px 0 0 -60px;border-radius:50%;border:2px solid rgba(255,255,255,.5)}
+.cav{position:absolute;left:50%;top:230px;width:120px;height:120px;margin:-60px 0 0 -60px;border-radius:50%;background:linear-gradient(135deg,#3a4372,#262c52);display:flex;align-items:center;justify-content:center}
+.cbtn{position:absolute;top:570px;width:76px;height:76px;border-radius:50%;display:flex;align-items:center;justify-content:center}
+.dots{position:absolute;top:418px;left:0;right:0;display:flex;justify-content:center;gap:16px}
+.dots i{width:16px;height:16px;border-radius:50%;border:2px solid #1E2761;display:block}
+.keys{position:absolute;top:458px;left:30px;right:30px;display:grid;grid-template-columns:repeat(3,1fr);row-gap:6px;column-gap:12px}
+.keys div{height:54px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:600;color:#1b1f33}
+
+/* scenarios */
+.row{position:absolute;left:0;width:600px;height:100px;display:flex;align-items:center;gap:20px;padding:0 26px;border-radius:20px}
+.row .ic{width:54px;height:54px;border-radius:14px;background:rgba(202,220,252,.1);display:flex;align-items:center;justify-content:center;color:var(--ice);flex:none}
+.row .k{font-size:15px;letter-spacing:.16em;text-transform:uppercase;color:var(--mut);font-weight:600}
+.row .v{font-size:26px;font-weight:600;color:#fff;margin-top:2px;white-space:nowrap}
+.row .st{margin-left:auto;width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex:none}
+.pill{position:absolute;left:0;top:0;width:440px;height:96px;border-radius:48px;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#fff;text-align:center}
+.pill .m{font-size:34px;font-weight:800;letter-spacing:.06em;line-height:1}
+.pill .s{font-size:19px;font-weight:600;opacity:.95;margin-top:6px;letter-spacing:.02em}
+.burst{position:absolute;left:0;top:0;width:440px;height:96px;border-radius:48px;border:3px solid}
+.chip{display:inline-flex;align-items:center;gap:10px;font-size:20px;font-weight:600;padding:10px 18px;border-radius:30px;background:rgba(202,220,252,.08);border:1px solid rgba(202,220,252,.16);white-space:nowrap}
+.step{position:absolute;top:0;height:56px;width:250px;display:flex;align-items:center;justify-content:center;gap:12px;font-size:21px;font-weight:600;color:var(--mut)}
+.step .n{width:30px;height:30px;border-radius:50%;border:2px solid rgba(202,220,252,.35);display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700}
+.tg{position:absolute;width:440px;border-radius:22px;background:#fff;color:#1b1f33;padding:18px 20px;box-shadow:0 30px 80px rgba(0,0,0,.5)}
+.tgb{flex:1;height:46px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700}
+
+/* analyst */
+.frow{position:absolute;left:28px;right:28px;height:74px;border-radius:14px;display:flex;align-items:center;font-size:19px;padding:0 18px;gap:16px}
+.dpill{font-size:13px;font-weight:800;letter-spacing:.06em;padding:6px 10px;border-radius:8px;color:#fff;width:150px;text-align:center;flex:none}
+.bar2{position:absolute;left:0;height:26px;border-radius:6px}
+.mk{position:absolute;left:-6px;right:-6px;bottom:4px;height:42%;border-radius:6px;transform-origin:left;z-index:-1}
+.hl{position:relative;display:inline-block;z-index:0}
+</style></head>
+<body><div id="stage">
+<div id="bg"></div><div class="orb" id="orb1"></div><div class="orb" id="orb2"></div><div id="grid"></div>
+
+<!-- ========== S1 HOOK ========== -->
+<div class="l" id="h-text" style="left:170px;top:250px;width:900px">
+  <div class="l kick" id="h-kick" style="position:relative;color:#9DB4FF">8:42 pm · Pune</div>
+  <div id="h-name" data-w style="position:relative;font-size:120px;font-weight:800;letter-spacing:-.02em;margin-top:14px;line-height:1.05">Asha is 72.</div>
+  <div id="h-l2" data-w style="position:relative;font-size:40px;line-height:1.35;color:#C9D2EE;margin-top:26px;width:820px">A caller claiming to be from the <b>CBI</b> tells her to transfer <b>₹85,000</b>.</div>
+  <div id="h-l3" data-w style="position:relative;font-size:40px;line-height:1.35;color:#C9D2EE;margin-top:18px;width:820px">She opens UPI on her own phone and types her own PIN.</div>
+  <div id="h-l4" style="position:relative;font-size:40px;line-height:1.35;color:#C9D2EE;margin-top:18px;width:860px">
+    <span data-w id="h-l4a">Every check today says:</span>
+    <span class="hl" id="h-ok" style="color:#5BD07A;font-weight:800"><span class="mk" id="h-strike" style="background:#E0393E;height:5px;bottom:46%;z-index:2"></span>approved.</span>
+  </div>
+  <div id="h-l5" style="position:relative;font-size:40px;line-height:1.35;color:#FF7A7E;font-weight:700;margin-top:18px">…and ₹85,000 goes to a scammer.</div>
+</div>
+<div class="l" id="h-phonewrap" style="left:1260px;top:180px">
+ <div class="phone"><div class="screen"><div class="notch"></div>
+  <div class="scr callscr" id="h-call">
+    <div class="sbar" style="color:#fff"><span>8:42</span><span>5G<span class="batt"></span></span></div>
+    <div id="h-calltop" style="position:absolute;top:96px;left:0;right:0;text-align:center;font-size:17px;color:#AEB7D9">Incoming call…</div>
+    <div class="ring" id="h-r1"></div><div class="ring" id="h-r2"></div><div class="ring" id="h-r3"></div>
+    <div class="cav" id="h-cav"></div>
+    <div style="position:absolute;top:320px;left:0;right:0;text-align:center;font-size:28px;font-weight:700">“CBI Officer”</div>
+    <div style="position:absolute;top:362px;left:0;right:0;text-align:center;font-size:16px;color:#AEB7D9">+91 98•• •••421 · Delhi</div>
+    <div class="cbtn" id="h-dec" style="left:60px;background:#E0393E"></div>
+    <div class="cbtn" id="h-acc" style="right:60px;background:#22A447"></div>
+    <div class="tap" id="h-tap0" style="left:252px;top:608px"></div>
+  </div>
+  <div class="scr" id="h-pay"></div>
+  <div class="scr ov" id="h-ok-ov"></div>
+ </div></div>
+</div>
+
+<!-- ========== S2 STATS ========== -->
+<div class="l" id="s-top" style="left:0;top:300px;width:1920px;text-align:center">
+  <div class="kick" id="s-kick" style="color:#FF8A8E">India · 2025</div>
+  <div id="s-num" style="font-size:190px;font-weight:800;letter-spacing:-.03em;line-height:1.1;margin-top:10px;background:linear-gradient(180deg,#fff 30%,#FFB0B2);-webkit-background-clip:text;color:transparent">₹0</div>
+  <div id="s-sub" style="font-size:42px;color:#C9D2EE;margin-top:6px">lost to cyber fraud in a single year</div>
+</div>
+<div class="l" id="s-src" style="left:0;bottom:60px;width:1920px;text-align:center;font-size:18px;color:#6E7AA3">Source: Ministry of Home Affairs (NCRP data), 2025</div>
+<div class="l" id="s-most" data-w style="left:0;top:640px;width:1920px;text-align:center;font-size:46px;color:#fff;font-weight:600">Mostly scams, where victims are tricked into <span style="color:#FF8A8E">paying themselves</span>.</div>
+<div class="l" id="s-a" data-w style="left:0;top:380px;width:1920px;text-align:center;font-size:84px;font-weight:700;letter-spacing:-.01em">A PIN checks <span style="color:#9DB4FF">who</span> you are.</div>
+<div class="l" id="s-b" style="left:0;top:520px;width:1920px;text-align:center;font-size:84px;font-weight:700;letter-spacing:-.01em">
+  <span data-w id="s-b1">Nobody checks</span> <span class="hl" id="s-hl"><span class="mk" id="s-mk" style="background:rgba(217,130,43,.55)"></span>what’s happening.</span></div>
+
+<!-- ========== S3 INTRO ========== -->
+<div class="l" id="logo" style="left:0;top:0;display:flex;align-items:center;gap:30px;transform-origin:0 0;z-index:40">
+  <svg id="logo-svg" width="150" height="174" viewBox="0 0 100 116">
+    <defs><linearGradient id="lg1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5B7BFF"/><stop offset="1" stop-color="#1E2761"/></linearGradient>
+      <linearGradient id="lg2" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#CADCFC"/><stop offset="1" stop-color="#7F9BFF"/></linearGradient></defs>
+    <path id="lg-fill" d="M50 5 L91 20 V55 C91 82 72 100 50 110 C28 100 9 82 9 55 V20 Z" fill="url(#lg1)"/>
+    <path id="lg-stroke" d="M50 5 L91 20 V55 C91 82 72 100 50 110 C28 100 9 82 9 55 V20 Z" fill="none" stroke="url(#lg2)" stroke-width="4" stroke-linejoin="round" pathLength="1" stroke-dasharray="1 1"/>
+    <path id="lg-check" d="M31 57 L45 71 L71 43" fill="none" stroke="#fff" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" pathLength="1" stroke-dasharray="1 1"/>
+  </svg>
+  <div>
+    <div id="logo-word" style="font-size:132px;font-weight:800;letter-spacing:-.02em;line-height:1"></div>
+    <div id="logo-hi" style="font-family:'Nirmala UI',sans-serif;font-size:30px;color:#9DB4FF;margin-top:6px;letter-spacing:.04em">प्रमाण · proof</div>
+  </div>
+</div>
+<div class="l" id="i-tag" data-w style="left:0;top:690px;width:1920px;text-align:center;font-size:44px;color:#C9D2EE">checks the <b>situation</b> before every payment, in <b>milliseconds</b>.</div>
+<div class="l" id="i-same" style="left:0;top:470px;width:1920px;text-align:center;font-size:72px;font-weight:700;transform-origin:50% 0">Same <span style="color:#9DB4FF">₹85,000</span> payment. Four situations.</div>
+
+<!-- ========== S4 SCENARIOS ========== -->
+<div class="l" id="stepper" style="left:410px;top:118px;width:1100px;height:56px">
+  <div class="l" id="step-hl" style="left:0;top:0;width:250px;height:56px;border-radius:28px"></div>
+</div>
+<div class="l" id="sc-phone" style="left:220px;top:240px"><div class="phone"><div class="screen" id="sc-screen"><div class="notch"></div></div></div></div>
+<div class="l" id="sc-mid" style="left:680px;top:0"></div>
+<div class="l glass" id="gcard" style="left:1330px;top:236px;width:440px;height:356px">
+  <div class="kick" style="position:absolute;left:28px;top:24px;font-size:15px;color:var(--mut)">Risk score</div>
+  <div id="g-scan" style="position:absolute;right:28px;top:22px;font-size:16px;color:#9DB4FF;font-weight:600"></div>
+  <svg width="440" height="250" viewBox="0 0 440 250" style="position:absolute;left:0;top:30px">
+    <g id="g-arcs"></g>
+    <g id="g-needle"><line x1="220" y1="200" x2="72" y2="200" stroke="#fff" stroke-width="5" stroke-linecap="round"/><circle cx="220" cy="200" r="12" fill="#fff"/></g>
+  </svg>
+  <div id="g-val" style="position:absolute;left:0;right:0;top:246px;text-align:center;font-size:42px;font-weight:800">0.00</div>
+  <div id="g-lab" style="position:absolute;left:0;right:0;top:304px;text-align:center;font-size:19px;font-weight:600;color:var(--mut)"></div>
+</div>
+<div class="l" id="sc-right" style="left:1330px;top:0"></div>
+
+<!-- ========== S5 ANALYST ========== -->
+<div class="l" id="a-head" data-w style="left:0;top:66px;width:1920px;text-align:center;font-size:56px;font-weight:700">Every decision comes with a <span style="color:#9DB4FF">reason</span>.</div>
+<div class="l glass" id="a-win" style="left:160px;top:180px;width:1600px;height:820px;overflow:hidden">
+  <div style="position:absolute;left:0;right:0;top:0;height:64px;border-bottom:1px solid rgba(202,220,252,.12);display:flex;align-items:center;padding:0 26px;gap:10px">
+    <i style="width:13px;height:13px;border-radius:50%;background:#E0393E;display:block"></i><i style="width:13px;height:13px;border-radius:50%;background:#D9822B;display:block"></i><i style="width:13px;height:13px;border-radius:50%;background:#2E9E4F;display:block"></i>
+    <span style="margin-left:18px;font-size:20px;font-weight:700">Pramaan · Analyst console</span>
+    <span style="margin-left:auto;display:flex;align-items:center;gap:10px;font-size:16px;font-weight:700;color:#FF8A8E;letter-spacing:.14em"><i id="a-live" style="width:11px;height:11px;border-radius:50%;background:#FF5A5E;display:block"></i>LIVE</span>
+  </div>
+  <div style="position:absolute;left:46px;top:88px;font-size:14px;letter-spacing:.16em;color:var(--mut);font-weight:600;display:flex;gap:16px;width:860px">
+    <span style="width:96px">TIME</span><span style="width:150px">DECISION</span><span style="width:112px">AMOUNT</span><span style="flex:1">TOP REASON</span><span>LATENCY</span></div>
+  <div id="a-feed" style="position:absolute;left:0;top:118px;width:940px;height:700px"></div>
+  <div style="position:absolute;left:940px;top:64px;bottom:0;width:1px;background:rgba(202,220,252,.12)"></div>
+  <div id="a-why" style="position:absolute;left:970px;top:90px;width:600px;height:700px"></div>
+  <div id="a-toast" style="position:absolute;left:970px;top:690px;width:600px;height:80px;border-radius:16px;background:rgba(46,158,79,.16);border:1px solid rgba(91,208,122,.45);display:flex;align-items:center;gap:16px;padding:0 22px;font-size:20px;font-weight:600"></div>
+</div>
+<svg class="l" id="cursor" width="38" height="48" viewBox="0 0 26 32" style="z-index:60;filter:drop-shadow(0 6px 10px rgba(0,0,0,.5))"><path d="M2 2 L2 26 L8.5 20 L13 30 L17.5 28 L13 18.5 L22 18.5 Z" fill="#fff" stroke="#111" stroke-width="1.6" stroke-linejoin="round"/></svg>
+<div class="l" id="cur-click" style="z-index:59;width:56px;height:56px;border-radius:50%;border:3px solid #9DB4FF;margin:-28px 0 0 -28px"></div>
+
+<!-- ========== S6 CLOSE ========== -->
+<div class="l" id="c-a" data-w style="left:0;top:400px;width:1920px;text-align:center;font-size:80px;font-weight:700">Honest payments stay <span style="color:#5BD07A">instant</span>.</div>
+<div class="l" id="c-b" data-w style="left:0;top:520px;width:1920px;text-align:center;font-size:80px;font-weight:700">Only risky ones are <span style="color:#F0A23B">stopped</span>.</div>
+<div class="l" id="c-tag" style="left:0;top:700px;width:1920px;text-align:center;font-size:40px;font-weight:600;color:#C9D2EE;letter-spacing:.02em">
+  <span id="c-t1" class="w">Fast.</span>&nbsp;&nbsp;<span id="c-t2" class="w">Secure.</span>&nbsp;&nbsp;<span id="c-t3" class="w">Explained.</span></div>
+<div class="l" id="c-sub" style="left:0;top:780px;width:1920px;text-align:center;font-size:24px;color:#8E9AC2">Real-time risk for every online payment · allow · challenge · block</div>
+<div class="l" id="c-team" style="left:0;top:900px;width:1920px;text-align:center;font-size:26px;color:#C9D2EE"><span style="display:inline-block;padding:12px 28px;border-radius:40px;border:1px solid rgba(202,220,252,.2);background:rgba(202,220,252,.06)"><b>Caffeinated Nerds</b> &nbsp;·&nbsp; BIOS Hackathon 2026</span></div>
+
+<div id="vig"></div><div id="fade"></div>
+</div>
+
+<script>
+const $=id=>document.getElementById(id);
+const clamp=(x,a=0,b=1)=>x<a?a:x>b?b:x;
+const E={lin:x=>x,o2:x=>1-(1-x)*(1-x),o3:x=>1-Math.pow(1-x,3),o4:x=>1-Math.pow(1-x,4),o5:x=>1-Math.pow(1-x,5),
+  i2:x=>x*x,i3:x=>x*x*x,io2:x=>x<.5?2*x*x:1-Math.pow(-2*x+2,2)/2,io3:x=>x<.5?4*x*x*x:1-Math.pow(-2*x+2,3)/2,
+  back:x=>{const c1=1.7,c3=c1+1;return 1+c3*Math.pow(x-1,3)+c1*Math.pow(x-1,2)}};
+const P=(t,a,d,e=E.o3)=>e(clamp((t-a)/d));
+const L=(a,b,k)=>a+(b-a)*k;
+const LC=(c1,c2,k)=>c1.map((v,i)=>Math.round(L(v,c2[i],k)));
+const rgb=(c,a=1)=>`rgba(${c[0]},${c[1]},${c[2]},${a})`;
+
+function S(el,o){
+  if(typeof el==='string')el=$(el);
+  const op=o.o??1,x=o.x??0,y=o.y??0,s=o.s??1,r=o.r??0,ry=o.ry??0,b=o.b??0;
+  el.style.opacity=op.toFixed(4);
+  el.style.visibility=op<0.003?'hidden':'visible';
+  el.style.transform=(ry?`perspective(1600px) rotateY(${ry}deg) `:'')+`translate(${x.toFixed(2)}px,${y.toFixed(2)}px) rotate(${r}deg) scale(${s.toFixed(4)})`;
+  el.style.filter=b>0.05?`blur(${b.toFixed(2)}px)`:'none';
+}
+// enter at a, exit starting at e (null = never)
+function V(t,a,e,o={}){
+  const di=o.di??.7,dd=o.dd??.5,dy=o.dy??34,dx=o.dx??0,ds=o.ds??0,db=o.db??10;
+  const i=P(t,a,di,o.ei||E.o4), q=e==null?0:P(t,e,dd,o.eo||E.i3);
+  return {o:i*(1-q),x:(1-i)*dx+q*(o.ox??-dx*.6),y:(1-i)*dy+q*(o.oy??-dy*.6),s:1+(1-i)*ds+q*(o.os??0),b:(1-i)*db+q*(o.ob??db)};
+}
+// kinetic words: element with data-w gets word spans; animate them in from a, whole element out at e
+function splitWords(el){
+  [...el.childNodes].forEach(n=>{
+    if(n.nodeType===3){
+      const parts=n.textContent.split(/(\s+)/);const f=document.createDocumentFragment();
+      parts.forEach(p=>{if(!p)return; if(/^\s+$/.test(p))f.appendChild(document.createTextNode(p)); else {const s=document.createElement('span');s.className='w';s.textContent=p;f.appendChild(s);}});
+      n.replaceWith(f);
+    } else if(n.nodeType===1 && !n.classList.contains('hl') && !n.classList.contains('w')) splitWords(n);
+  });
+}
+function W(t,id,a,e,o={}){
+  const el=$(id), ws=el.querySelectorAll('.w'), st=o.st??.055;
+  ws.forEach((w,i)=>{const k=P(t,a+i*st,o.di??.65,E.o4); S(w,{o:k,y:(1-k)*(o.dy??26),b:(1-k)*6});});
+  const q=e==null?0:P(t,e,o.dd??.45,E.i3);
+  const vis=t>=a-0.01&&q<1;
+  S(el,{o:vis?1-q:0,x:o.x??0,y:(o.y??0)-q*(o.oy??20),b:q*8,s:o.s??1});
+}
+
+/* ---------- icons ---------- */
+const IC={user:'<circle cx="12" cy="7" r="4"/><path d="M5 21v-2a4 4 0 0 1 4-4h6a4 4 0 0 1 4 4v2"/>',
+ phone:'<rect x="6" y="2" width="12" height="20" rx="2.5"/><path d="M11 18h2"/>',
+ keyboard:'<rect x="2" y="5" width="20" height="14" rx="2"/><path d="M6 9h.01M10 9h.01M14 9h.01M18 9h.01M7 15h10"/>',
+ sim:'<path d="M7 2h8l5 5v13a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2z"/><rect x="8.5" y="11" width="7" height="7" rx="1"/>',
+ pin:'<path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0z"/><circle cx="12" cy="10" r="3"/>',
+ call:'<path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2z"/>',
+ clip:'<rect x="8" y="2" width="8" height="4" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/>',
+ bot:'<path d="M12 8V4H8"/><rect x="4" y="8" width="16" height="12" rx="2"/><path d="M2 14h2M20 14h2M15 13v2M9 13v2"/>',
+ globe:'<circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20M2 12h20"/>',
+ act:'<path d="M22 12h-4l-3 9L9 3l-3 9H2"/>',
+ check:'<path d="M20 6 9 17l-5-5"/>', x:'<path d="M18 6 6 18M6 6l12 12"/>',
+ warn:'<path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4M12 17h.01"/>',
+ zap:'<path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/>',
+ bell:'<path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/>',
+ send:'<path d="m22 2-7 20-4-9-9-4z"/><path d="M22 2 11 13"/>',
+ refresh:'<path d="M3 12a9 9 0 0 1 15.7-6L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-15.7 6L3 16"/><path d="M8 16H3v5"/>',
+ clock:'<circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>',
+ shield:'<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>',
+ lock:'<rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>',
+ fp:'<path d="M12 10a2 2 0 0 0-2 2c0 1-.1 2.5-.3 4"/><path d="M14 13.1c0 2.4 0 6.4-1 8.9"/><path d="M17.3 21c.1-.6.4-2.3.5-3"/><path d="M2 12a10 10 0 0 1 18-6"/><path d="M2 16h.01"/><path d="M21.8 16c.2-2 .1-5.4 0-6"/><path d="M5 19.5C5.5 18 6 15 6 12a6 6 0 0 1 .3-2"/><path d="M8.7 22c.2-.7.4-1.3.6-2"/><path d="M9 6.8a6 6 0 0 1 9 5.2v2"/>'};
+const ico=(k,sz=28,sw=2,c='currentColor')=>`<svg width="${sz}" height="${sz}" viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="${sw}" stroke-linecap="round" stroke-linejoin="round">${IC[k]}</svg>`;
+
+const C={green:[46,158,79],amber:[217,130,43],red:[224,57,62],blue:[76,111,255],violet:[120,90,255]};
+const sbar=(dark)=>`<div class="sbar" style="color:${dark?'#fff':'#1b1f33'}"><span>8:42</span><span>5G<span class="batt"></span></span></div>`;
+function payHTML(p){
+  return `${sbar(p.dark)}${p.call?`<div class="callpill"><i></i>On call · <span class="cdur">06:12</span></div>`:''}
+  <div class="phead" style="${p.dark?'color:#fff':''}">←&nbsp; Pay <span class="up">UPI</span></div>
+  <div class="av" style="background:${p.avc}">${p.ini}</div>
+  <div class="pname" style="${p.dark?'color:#fff':''}">${p.name}</div><div class="pupi">${p.upi}</div>
+  <div class="ptag" style="background:${p.tagbg};color:${p.tagc}">${p.tag}</div>
+  <div class="pamt" style="${p.dark?'color:#fff':''}">₹85,000</div>
+  <div class="pnote">${p.note}</div>`;
+}
+
+/* ---------- HOOK phone build ---------- */
+$('h-cav').innerHTML=ico('shield',56,1.8,'#CADCFC');
+$('h-dec').innerHTML=ico('x',36,2.6,'#fff');
+$('h-acc').innerHTML=ico('call',32,2.2,'#fff');
+$('h-pay').innerHTML=payHTML({call:true,name:'CBI Verification Cell',upi:'cbi.verify@ybl',ini:'CB',avc:'#5A6275',tag:'New payee',tagbg:'#FFF3E0',tagc:'#B25E00',note:''}).replace('top:84px','top:84px')
+ +`<div style="position:absolute;top:378px;left:0;right:0;text-align:center;font-size:15px;font-weight:600;color:#1E2761">Enter 6-digit UPI PIN</div>
+  <div class="dots" style="top:410px">${'<i></i>'.repeat(6)}</div>
+  <div class="keys" style="top:448px">${['1','2','3','4','5','6','7','8','9','⌫','0','✓'].map(k=>`<div>${k}</div>`).join('')}</div>
+  <div class="tap" id="h-tap1"></div>`;
+$('h-ok-ov').innerHTML=`<div class="big" id="h-ok-ic" style="background:rgba(255,255,255,.2)">${ico('check',72,3,'#fff')}</div><h3 id="h-ok-h">Payment approved</h3><p id="h-ok-p">₹85,000 sent to cbi.verify@ybl</p>`;
+$('h-pay').style.background='#F4F6FC';
+const H_PIN=[3.75,3.98,4.2,4.4,4.62,4.85]; const H_KEY=[1,6,8,3,10,4]; // key indices pressed
+
+/* ---------- SCENARIOS ---------- */
+const SC=[
+ {a:21,b:27,n:1,head:'Usual payee, own phone, normal typing',
+  sig:[['user','Payee','Usual · paid 6× before','ok'],['phone','Device','Asha’s own phone · 2 yrs','ok'],['keyboard','Typing','Normal rhythm and speed','ok']],
+  score:.04,rl:'Low risk',col:C.green,m:'ALLOW',s:'',sub:'No extra step. Pays instantly.',ms:38,cap:'Asha’s phone · Pune',
+  pay:{name:'Kulkarni Properties',upi:'kulkarni.rent@okhdfc',ini:'KP',avc:'#2E7D32',tag:'✓ Paid 6× before',tagbg:'#E8F5E9',tagc:'#2E7D32',note:'Rent · October'}},
+ {a:27,b:33.5,n:2,head:'New phone, SIM swapped 20 h ago, new city',
+  sig:[['phone','Device','New phone · first seen today','warn'],['sim','SIM','Swapped 20 hours ago','warn'],['pin','Location','Kolkata · usually Pune','warn']],
+  score:.58,rl:'Impostor risk',col:C.amber,m:'CHALLENGE',s:'biometric',sub:'Only the owner’s fingerprint gets through.',ms:42,cap:'Unknown phone · Kolkata',
+  pay:{name:'Rahul K',upi:'rahulk.77@okaxis',ini:'RK',avc:'#5A6275',tag:'New payee',tagbg:'#FFF3E0',tagc:'#B25E00',note:'—'}},
+ {a:33.5,b:41,n:3,head:'On a call, new UPI ID pasted, own phone',
+  sig:[['call','Call','Active call · 6 min','warn'],['clip','Payee','New UPI ID · pasted','warn'],['phone','Device','Asha’s own phone','ok']],
+  score:.71,rl:'Scam risk',col:C.amber,m:'CHALLENGE',s:'hold + trusted contact',sub:'30-min pause + scam warning.',ms:45,cap:'Asha’s phone · on a call',
+  pay:{call:true,name:'Refund Desk',upi:'refund.cbi@ybl',ini:'RD',avc:'#5A6275',tag:'New payee · pasted ID',tagbg:'#FFF3E0',tagc:'#B25E00',note:'“Verification deposit”'}},
+ {a:41,b:47,n:4,head:'Emulator + VPN, 15 attempts in 10 minutes',
+  sig:[['bot','Device','Android emulator','bad'],['globe','Network','VPN · masked IP','bad'],['act','Velocity','<span class="att">15</span> attempts in 10 min','bad']],
+  score:.97,rl:'Bot / card-testing',col:C.red,m:'BLOCK',s:'',sub:'Stopped. Analyst alerted.',ms:31,cap:'Emulator · VPN',
+  pay:{dark:true,name:'Asha M',upi:'asha.m@oksbi',ini:'AM',avc:'#3A4372',tag:'Script-driven session',tagbg:'rgba(224,57,62,.18)',tagc:'#FF8A8E',note:'Attempt <span class="att">15</span> of ∞'}},
+];
+const ST={ok:[C.green,'check'],warn:[C.amber,'warn'],bad:[C.red,'x']};
+const STEPS=['Allow','Biometric','Hold + family','Block'];
+STEPS.forEach((s,i)=>{const d=document.createElement('div');d.className='step';d.id='step'+i;d.style.left=(i*283)+'px';d.innerHTML=`<span class="n">${i+1}</span>${s}`;$('stepper').appendChild(d);});
+
+SC.forEach((c,k)=>{
+  // phone screen layer
+  const scr=document.createElement('div');scr.className='scr';scr.id='ps'+k;
+  scr.style.background=c.pay.dark?'linear-gradient(180deg,#141a33,#0b0e1f)':'#F4F6FC';
+  scr.innerHTML=payHTML(c.pay)+`<div class="chk" id="chk${k}" style="${c.pay.dark?'color:#CADCFC':''}"><span>Checking with Pramaan…</span><div class="bar"><i></i></div></div>
+    <div class="pbtn" id="pbtn${k}">${ico('lock',20,2.4,'#fff')} Pay ₹85,000</div><div class="tap" id="ptap${k}" style="left:163px;top:640px"></div>`;
+  $('sc-screen').appendChild(scr);
+  // decision overlay on phone
+  const ov=document.createElement('div');ov.className='scr ov';ov.id='pov'+k;
+  const ovs=[
+    `<div style="position:absolute;inset:0;background:linear-gradient(180deg,#2E9E4F,#1F7A3A)"></div><div style="position:relative"><div class="big" style="background:rgba(255,255,255,.2);margin:0 auto 26px">${ico('check',72,3,'#fff')}</div><h3>Paid instantly</h3><p>₹85,000 to Kulkarni Properties<br>No extra step</p></div>`,
+    `<div style="position:absolute;inset:0;background:linear-gradient(180deg,#1b2140,#0b0e1f)"></div><div style="position:relative;width:100%"><div class="big" id="fpc" style="background:rgba(217,130,43,.18);border:2px solid #D9822B;margin:0 auto 26px;position:relative;overflow:hidden">${ico('fp',76,1.8,'#F0A23B')}<i id="fpscan" style="position:absolute;left:10px;right:10px;height:3px;background:#F0A23B;box-shadow:0 0 12px #F0A23B;top:0"></i></div><h3 id="fph">Verify it’s you</h3><p id="fpp">Owner’s fingerprint required<br>to send ₹85,000</p></div>`,
+    `<div style="position:absolute;inset:0;background:linear-gradient(180deg,#3a2408,#1a1206)"></div><div style="position:relative;width:100%"><div id="hold3"><div style="font-size:15px;letter-spacing:.18em;color:#F0A23B;font-weight:700">PAYMENT PAUSED</div><div id="tmr" style="font-size:76px;font-weight:800;margin:6px 0 8px">30:00</div>
+      <div style="background:rgba(255,255,255,.1);border-radius:16px;padding:16px;text-align:left;font-size:15.5px;line-height:1.45">${ico('warn',20,2.2,'#F0A23B')} <b style="color:#F0A23B">Is someone on the phone asking you to pay?</b><br>Police, CBI and banks never ask for money over a call.</div>
+      <p style="margin-top:14px">We’ve asked <b>Rohan</b> to confirm.</p></div>
+      <div id="safe3" style="position:absolute;left:0;right:0;top:50%;transform:translateY(-50%)"><div class="big" style="background:rgba(91,208,122,.2);border:2px solid #5BD07A;margin:0 auto 22px">${ico('shield',64,2,'#5BD07A')}</div><h3>₹85,000 is safe</h3><p>Rohan cancelled the payment</p></div></div>`,
+    `<div style="position:absolute;inset:0;background:linear-gradient(180deg,#5a1215,#2a080a)"></div><div style="position:relative"><div class="big" style="background:rgba(255,255,255,.12);border:2px solid #FF8A8E;margin:0 auto 26px">${ico('x',68,3,'#fff')}</div><h3>Transaction blocked</h3><p>Automated attack detected<br>Security team alerted</p></div>`];
+  ov.innerHTML=ovs[k];
+  $('sc-screen').appendChild(ov);
+  // mid column
+  const mid=document.createElement('div');mid.id='mid'+k;mid.className='l';mid.style.cssText='left:0;top:0;width:600px';
+  mid.innerHTML=`<div class="l kick" id="sk${k}" style="top:262px;font-size:16px;color:${rgb(c.col)}">Situation ${c.n} of 4</div>
+   <div class="l" id="sh${k}" style="top:298px;width:640px;font-size:29px;font-weight:700;white-space:nowrap">${c.head}</div>
+   ${c.sig.map((g,j)=>`<div class="row glass l" id="r${k}_${j}" style="top:${370+j*118}px"><div class="ic">${ico(g[0],28,2)}</div><div><div class="k">${g[1]}</div><div class="v">${g[2]}</div></div>
+     <div class="st" id="st${k}_${j}" style="background:${rgb(ST[g[3]][0],.18)};border:2px solid ${rgb(ST[g[3]][0])}">${ico(ST[g[3]][1],22,2.8,rgb(ST[g[3]][0]))}</div></div>`).join('')}
+   <div class="l" id="scan${k}" style="top:366px;left:-10px;width:620px;height:4px;border-radius:2px;background:linear-gradient(90deg,transparent,#9DB4FF,transparent);box-shadow:0 0 24px 6px rgba(120,150,255,.45)"></div>`;
+  $('sc-mid').appendChild(mid);
+  // right column
+  const rt=document.createElement('div');rt.id='rt'+k;rt.className='l';rt.style.cssText='left:0;top:0';
+  rt.innerHTML=`<div class="l" style="top:614px;width:440px;height:96px"><div class="burst l" id="bu${k}" style="border-color:${rgb(c.col)}"></div>
+     <div class="pill l" id="pl${k}" style="background:linear-gradient(180deg,${rgb(LC(c.col,[255,255,255],.12))},${rgb(c.col)});box-shadow:0 18px 50px ${rgb(c.col,.45)}"><div class="m">${c.m}</div>${c.s?`<div class="s">${c.s}</div>`:''}</div></div>
+   <div class="l" id="sb${k}" style="top:728px;width:440px;text-align:center;font-size:23px;color:#DCE3F7">${c.sub}</div>
+   <div class="l" id="lt${k}" style="top:784px;width:440px;text-align:center"><span class="chip">${ico('zap',20,2.2,'#F0D23B')} Decided in ${c.ms} ms</span></div>
+   ${k===3?`<div class="l" id="al3" style="top:848px;width:440px;text-align:center"><span class="chip" style="color:#FF8A8E;border-color:rgba(255,90,94,.4);background:rgba(224,57,62,.12)">${ico('bell',20,2.2,'#FF8A8E')} Analyst alerted</span></div>`:''}
+   ${k===2?`<div class="tg l" id="tg" style="top:772px">
+      <div style="display:flex;align-items:center;gap:12px"><div style="width:42px;height:42px;border-radius:50%;background:#2AABEE;display:flex;align-items:center;justify-content:center">${ico('send',22,2.2,'#fff')}</div>
+      <div><div style="font-weight:800;font-size:17px">Pramaan Alerts</div><div style="font-size:13px;color:#7A8299">Telegram · to Rohan (son)</div></div><div style="margin-left:auto;font-size:13px;color:#7A8299">now</div></div>
+      <div style="font-size:16px;line-height:1.4;margin:12px 0 14px">Your mother is sending <b style="color:#1b1f33">₹85,000</b> to a <b style="color:#1b1f33">new UPI ID</b> while on a phone call.</div>
+      <div style="display:flex;gap:12px;position:relative"><div class="tgb" style="background:#EEF1FB;color:#1E2761">Approve</div><div class="tgb" id="tgc" style="background:#FDECEA;color:#C62828">Cancel</div>
+      <div class="tap" id="tgtap" style="left:320px;top:23px"></div></div></div>`:''}`;
+  $('sc-right').appendChild(rt);
+});
+// phone captions
+const cap=document.createElement('div');cap.className='l';cap.id='caps';cap.style.cssText='left:220px;top:990px;width:350px';
+cap.innerHTML=SC.map((c,k)=>`<div class="l" id="cap${k}" style="width:350px;text-align:center;font-size:19px;color:var(--mut);font-weight:600">${c.cap}</div>`).join('');
+$('stage').insertBefore(cap,$('vig'));
+// gauge arcs
+(function(){const cx=220,cy=200,R=150,pt=v=>{const a=Math.PI*(1-v);return [cx+R*Math.cos(a),cy-R*Math.sin(a)]};
+ const seg=(a,b,col)=>{const p=pt(a),q=pt(b);return `<path d="M${p[0]} ${p[1]} A${R} ${R} 0 0 1 ${q[0]} ${q[1]}" stroke="${col}" stroke-width="22" fill="none" stroke-linecap="butt"/>`};
+ $('g-arcs').innerHTML=`<path d="M70 200 A150 150 0 0 1 370 200" stroke="rgba(202,220,252,.08)" stroke-width="34" fill="none"/>`+seg(0,.298,'#2E9E4F')+seg(.302,.848,'#D9822B')+seg(.852,1,'#E0393E')
+  +[0,.3,.85,1].map(v=>{const a=Math.PI*(1-v),r1=172,r2=182;return `<line x1="${cx+r1*Math.cos(a)}" y1="${cy-r1*Math.sin(a)}" x2="${cx+r2*Math.cos(a)}" y2="${cy-r2*Math.sin(a)}" stroke="rgba(202,220,252,.5)" stroke-width="2"/>`}).join('');})();
+
+/* ---------- ANALYST ---------- */
+const FEED=[
+ ['20:42:07','BLOCK',C.red,'₹85,000','Emulator + VPN + 15 tries / 10 min','31 ms'],
+ ['20:41:55','HOLD + FAMILY',C.amber,'₹85,000','On a call + new UPI ID pasted','45 ms'],
+ ['20:41:40','BIOMETRIC',C.amber,'₹85,000','SIM swapped 20 h ago + new phone','42 ms'],
+ ['20:41:22','ALLOW',C.green,'₹85,000','Usual payee, own phone','38 ms'],
+ ['20:41:09','ALLOW',C.green,'₹1,240','Known merchant, usual time','22 ms'],
+ ['20:40:58','ALLOW',C.green,'₹350','Usual payee','19 ms']];
+$('a-feed').innerHTML=FEED.map((f,i)=>`<div class="frow" id="fr${i}" style="top:${i*86}px"><span style="width:96px;color:var(--mut)">${f[0]}</span><span class="dpill" style="background:${rgb(f[2])}">${f[1]}</span><span style="width:112px;font-weight:700">${f[3]}</span><span style="flex:1;color:#DCE3F7;white-space:nowrap">${f[4]}</span><span style="color:var(--mut)">${f[5]}</span></div>`).join('');
+const WHY=[['On an active phone call','+0.31',.31,C.amber],['New payee, UPI ID pasted','+0.24',.24,C.amber],['Amount 6× her usual','+0.13',.13,C.amber],['Own device, home location','−0.07',-.07,C.green]];
+$('a-why').innerHTML=`<div class="kick" style="font-size:14px;color:var(--mut)">Why this decision</div>
+ <div id="wy-h" style="font-size:30px;font-weight:800;margin-top:10px">CHALLENGE · hold + trusted contact</div>
+ <div style="font-size:18px;color:var(--mut);margin-top:6px">Risk 0.71 · Scam risk · ₹85,000 · 20:41:55</div>
+ ${WHY.map((w,i)=>`<div id="wy${i}" style="position:absolute;left:0;top:${150+i*84}px;width:600px"><div style="display:flex;justify-content:space-between;font-size:19px;font-weight:600"><span>${w[0]}</span><span style="color:${rgb(w[3])}">${w[1]}</span></div>
+   <div style="position:relative;height:26px;margin-top:10px;background:rgba(202,220,252,.07);border-radius:6px"><div class="bar2" id="wb${i}" style="width:${Math.abs(w[2])/.31*560}px;background:linear-gradient(90deg,${rgb(w[3],.65)},${rgb(w[3])})"></div></div></div>`).join('')}
+ <div id="wy-btn" style="position:absolute;left:0;top:500px;display:flex;gap:16px">
+   <div id="btn-ok" style="width:290px;height:62px;border-radius:14px;background:rgba(46,158,79,.18);border:1px solid #5BD07A;display:flex;align-items:center;justify-content:center;gap:10px;font-size:20px;font-weight:700;color:#8BE3A4">${ico('check',22,2.6,'#8BE3A4')} Confirm scam</div>
+   <div style="width:290px;height:62px;border-radius:14px;background:rgba(202,220,252,.06);border:1px solid rgba(202,220,252,.2);display:flex;align-items:center;justify-content:center;gap:10px;font-size:20px;font-weight:700;color:#C9D2EE">${ico('x',22,2.6,'#C9D2EE')} False alarm</div></div>`;
+$('a-toast').innerHTML=`<span id="a-spin" style="display:inline-flex">${ico('refresh',28,2.4,'#8BE3A4')}</span><span>Feedback saved · the model <b>retrains</b> on it</span>`;
+const CUR=[[47,1500,1100],[48.9,1500,1100],[49.6,560,445],[50.9,560,445],[51.6,1140,700],[53.6,1180,760]];
+const CLICKS=[[49.75,560,445],[51.75,1140,700]];
+
+/* split words */
+document.querySelectorAll('[data-w]').forEach(splitWords);
+// logo word letters
+$('logo-word').innerHTML=[...'Pramaan'].map(ch=>`<span class="w">${ch}</span>`).join('');
+const LOGO_W=()=>$('logo').offsetWidth, LOGO_H=()=>$('logo').offsetHeight;
+
+/* ======================= RENDER ======================= */
+function render(t){
+  // ---------- background accent ----------
+  const AK=[[0,C.blue],[7,C.violet],[8.5,C.red],[16.5,C.red],[17.5,C.blue],[21.5,C.green],[27,C.green],[27.6,C.amber],[40.9,C.amber],[41.4,C.red],[47,C.red],[47.6,C.blue],[60,C.blue]];
+  let ac=AK[0][1];for(let i=0;i<AK.length-1;i++){if(t>=AK[i][0]&&t<=AK[i+1][0]){ac=LC(AK[i][1],AK[i+1][1],E.io2((t-AK[i][0])/(AK[i+1][0]-AK[i][0])));break;} if(t>AK[i+1][0])ac=AK[i+1][1];}
+  $('orb1').style.background=`radial-gradient(circle,${rgb(ac,.30)} 0%,${rgb(ac,.10)} 35%,transparent 68%)`;
+  $('orb1').style.transform=`translate(${-250+Math.sin(t*.21)*160}px,${-420+Math.cos(t*.17)*120}px)`;
+  $('orb2').style.background=`radial-gradient(circle,${rgb(LC(ac,C.blue,.5),.22)} 0%,transparent 65%)`;
+  $('orb2').style.transform=`translate(${980+Math.cos(t*.19)*170}px,${180+Math.sin(t*.23)*140}px)`;
+  $('grid').style.transform=`translate(${(t*6)%64}px,${(t*4)%64}px)`;
+  S('fade',{o:Math.max(1-P(t,0,.8,E.o2),P(t,59.25,.75,E.io2))});
+
+  // ---------- S1 HOOK (0-8) ----------
+  const hx=P(t,7.35,.65,E.i3);
+  S('h-text',{o:1-hx,x:-hx*60,b:hx*12});
+  S('h-kick',V(t,.35,null,{dy:16}));
+  W(t,'h-name',.6,null,{st:.12});
+  W(t,'h-l2',1.5,null,{st:.045});
+  W(t,'h-l3',3.25,null,{st:.045});
+  W(t,'h-l4a',5.05,null,{st:.05});
+  S('h-ok',{o:P(t,5.35,.3),s:1+(1-P(t,5.35,.55,E.back))*.4,b:(1-P(t,5.35,.3))*6});
+  $('h-strike').style.transform=`scaleX(${P(t,6.35,.4,E.io3)})`;$('h-strike').style.opacity=t>6.35?1:0;
+  S('h-l5',V(t,6.6,null,{dy:24}));
+  // phone
+  const pin=P(t,.4,1.1,E.o4);
+  S('h-phonewrap',{o:pin*(1-hx),y:(1-pin)*120+hx*-30,ry:L(-16,-6,P(t,0,7.5,E.io2)),s:L(.94,1,pin)*(1+hx*.12),b:hx*14});
+  const ringT=t%1.4;
+  ['h-r1','h-r2','h-r3'].forEach((id,i)=>{const k=((t+i*.47)%1.4)/1.4;S(id,{o:t<2.35?(1-k)*.7:0,s:1+k*.9});});
+  const acc=P(t,2.35,.25);
+  $('h-calltop').textContent=t<2.4?'Incoming call…':'On call · 00:'+String(Math.floor(clamp((t-2.4)*1.6+1,1,59))).padStart(2,'0');
+  S('h-dec',{o:1-acc,s:1-acc*.4});S('h-acc',{o:1-acc,s:1-acc*.4,x:-acc*95});
+  const tp0=clamp((t-2.15)/.55);S('h-tap0',{o:tp0>0&&tp0<1?(1-tp0)*.9:0,s:.4+tp0*1.1});
+  const pay=P(t,3.15,.6,E.io3);
+  S('h-call',{o:1,y:-pay*120,s:1-pay*.04,b:pay*4});
+  S('h-pay',{o:pay,y:(1-pay)*720});
+  const dots=$('h-pay').querySelectorAll('.dots i'),keys=$('h-pay').querySelectorAll('.keys div');
+  dots.forEach((d,i)=>{d.style.background=t>=H_PIN[i]?'#1E2761':'transparent';d.style.transform=`scale(${t>=H_PIN[i]?1+.35*(1-P(t,H_PIN[i],.18)):1})`;});
+  keys.forEach((kd,i)=>{let f=0;H_PIN.forEach((pt,j)=>{if(H_KEY[j]===i&&t>=pt-.04&&t<pt+.22)f=1-(t-pt+.04)/.26;});kd.style.background=`rgba(30,39,97,${(.04+f*.16).toFixed(3)})`;});
+  { // finger tap on keys
+    let j=-1;H_PIN.forEach((pt,i)=>{if(t>=pt-.06&&t<pt+.2)j=i;});const tp=$('h-tap1');
+    if(j>=0){const ki=H_KEY[j],col=ki%3,row=Math.floor(ki/3),k=clamp((t-H_PIN[j]+.06)/.26);tp.style.left=(30+col*94+41)+'px';tp.style.top=(448+row*60+27)+'px';S(tp,{o:(1-k)*.8,s:.5+k*.7});}else S(tp,{o:0});
+  }
+  const ok=P(t,5.15,.45,E.o4), red=P(t,6.35,.6,E.io3);
+  S('h-ok-ov',{o:ok,s:L(1.08,1,ok)});
+  $('h-ok-ov').style.background=`linear-gradient(180deg,${rgb(LC([46,158,79],[190,40,46],red))},${rgb(LC([31,122,58],[110,18,24],red))})`;
+  $('h-ok-h').textContent=red>.5?'₹85,000 is gone':'Payment approved';
+  $('h-ok-p').textContent=red>.5?'Sent to a scammer’s mule account':'₹85,000 sent to cbi.verify@ybl';
+  S('h-ok-ic',{s:L(.3,1,P(t,5.25,.6,E.back))*(1-.12*Math.sin(red*Math.PI))});
+  $('h-ok-ic').innerHTML=ico(red>.5?'x':'check',72,3,'#fff');
+
+  // ---------- S2 STATS (8-17) ----------
+  const s2up=P(t,10.95,.8,E.io3), s2out=P(t,12.55,.5,E.i3);
+  S('s-top',{o:P(t,8.15,.5)*(1-s2out),y:-s2up*130,s:1-s2up*.18,b:s2out*12+(1-P(t,8.15,.5))*10});
+  S('s-kick',V(t,8.25,null,{dy:14}));
+  const n=Math.round(22495*P(t,8.45,2.1,E.o5));$('s-num').textContent='₹'+n.toLocaleString('en-IN')+' crore';
+  S('s-num',{s:L(.9,1,P(t,8.35,.9,E.o4))});
+  S('s-sub',V(t,9.1,null,{dy:20}));
+  S('s-src',V(t,9.4,12.55,{dy:10,db:0}));
+  W(t,'s-most',11.35,12.55,{st:.05});
+  W(t,'s-a',12.95,16.35,{st:.08});
+  W(t,'s-b1',13.85,null,{st:.08});
+  S('s-b',{o:t<13.8?0:1-P(t,16.35,.45,E.i3),y:-P(t,16.35,.45,E.i3)*20,b:P(t,16.35,.45,E.i3)*8});
+  S('s-hl',V(t,14.1,null,{dy:26,db:6}));
+  $('s-mk').style.transform=`scaleX(${P(t,14.55,.55,E.io3)})`;
+
+  // ---------- S3 INTRO + LOGO (17-21) and persistent logo ----------
+  const lw=LOGO_W(),lh=LOGO_H();
+  const cx=(1920-lw)/2,cy=330;           // center pose
+  const kx=56,ky=40,ks=.3;              // corner pose
+  const toC=P(t,19.5,.9,E.io3), back=P(t,55.9,1.0,E.io3);
+  const k2=toC*(1-back);
+  const lx=L(cx,kx,k2),ly=L(cy,ky,k2),ls=L(1,ks,k2);
+  const lo=P(t,17.05,.4)*(1-P(t,59.25,.75));
+  const el=$('logo');el.style.left='0px';el.style.top='0px';
+  S(el,{o:lo,x:lx,y:ly,s:ls*L(.9,1,P(t,17,.9,E.o4))});
+  $('lg-stroke').style.strokeDashoffset=1-P(t,17.1,1.0,E.io3);
+  $('lg-fill').style.opacity=P(t,17.8,.6);
+  $('lg-check').style.strokeDashoffset=1-P(t,18.15,.45,E.o3);
+  $('logo-word').querySelectorAll('.w').forEach((w,i)=>{const k=P(t,17.55+i*.06,.6,E.o4);S(w,{o:k,y:(1-k)*40,b:(1-k)*8});});
+  S('logo-hi',{o:P(t,18.3,.5)*(1-P(t,19.4,.4)+P(t,56.6,.6)),y:0});
+  W(t,'i-tag',18.45,19.55,{st:.045});
+  const sameIn=P(t,19.95,.7,E.o4), sameUp=P(t,20.75,.75,E.io3);
+  S('i-same',{o:sameIn*(1-P(t,46.4,.6,E.i3)),y:L((1-sameIn)*40,-412,sameUp),s:L(1,.5,sameUp),b:(1-sameIn)*10+P(t,46.4,.6)*8});
+
+  // ---------- S4 SCENARIOS (21-47) ----------
+  const secIn=P(t,21.0,.8,E.o4), secOut=P(t,46.5,.6,E.i3);
+  S('stepper',{o:P(t,21.1,.7)*(1-secOut),y:(1-P(t,21.1,.7))*20-secOut*20});
+  // stepper highlight position/color
+  let hp=0,hc=SC[0].col;
+  for(let k=0;k<4;k++){if(t>=SC[k].a-.3){const m=k===0?1:P(t,SC[k].a-.35,.7,E.io3);hp=L(k===0?0:k-1,k,m);hc=LC(k===0?SC[0].col:SC[k-1].col,SC[k].col,m);}}
+  $('step-hl').style.transform=`translateX(${hp*283}px)`;$('step-hl').style.background=rgb(hc,.22);$('step-hl').style.boxShadow=`inset 0 0 0 2px ${rgb(hc,.9)}`;
+  for(let i=0;i<4;i++){const d=Math.max(0,1-Math.abs(hp-i));const st=$('step'+i);st.style.color=rgb(LC([154,166,200],[255,255,255],d));
+    const nn=st.querySelector('.n');nn.style.background=rgb(hc,d);nn.style.borderColor=d>.5?rgb(hc):'rgba(202,220,252,.35)';}
+  S('sc-phone',{o:secIn*(1-secOut),x:(1-secIn)*-120,y:secOut*20,ry:L(10,4,P(t,21,26,E.io2)),b:secOut*10});
+  S('gcard',{o:P(t,21.3,.7)*(1-secOut),x:(1-P(t,21.3,.7,E.o4))*80,b:secOut*10});
+  // gauge needle (smooth swings between scenarios)
+  let gv=0;SC.forEach((c,k)=>{if(t>=c.a+1.55){const prev=k?SC[k-1].score:0;gv=L(prev,c.score,P(t,c.a+1.55,1.25,E.back));}});
+  if(t<SC[0].a+1.55)gv=0;
+  gv=clamp(gv,0,1.02);
+  $('g-needle').setAttribute('transform',`rotate(${gv*180} 220 200)`);
+  let cur=-1;SC.forEach((c,k)=>{if(t>=c.a)cur=k;});
+  const scanning=cur>=0&&t>=SC[cur].a+1.4&&t<SC[cur].a+2.9;
+  $('g-val').textContent=gv.toFixed(2);
+  $('g-scan').textContent=scanning?'analysing'+'.'.repeat(1+Math.floor(t*6)%3):'';
+  if(cur>=0){const c=SC[cur],k=P(t,c.a+2.8,.4);$('g-lab').textContent=t>=c.a+2.75?c.rl:'';$('g-lab').style.color=rgb(c.col);$('g-lab').style.opacity=k;$('g-val').style.color=rgb(LC([255,255,255],LC(c.col,[255,255,255],.25),k));}
+
+  SC.forEach((c,k)=>{
+    const a=c.a,b=c.b,last=k===3,ex=last?46.5:b-.55;
+    // phone screen swipe
+    const sin=k===0?1:P(t,a-.15,.7,E.io3), sout=last?0:P(t,b-.15,.7,E.io3);
+    S('ps'+k,{o:(k===0?1:sin)*(1-sout*.6),x:(1-sin)*330-sout*110,s:1-sout*.05});
+    const pt=clamp((t-(a+.95))/.55);S('ptap'+k,{o:pt>0&&pt<1?(1-pt)*.85:0,s:.4+pt*1.2});
+    $('pbtn'+k).style.transform=`scale(${1-.05*Math.sin(Math.PI*clamp((t-(a+.95))/.3))})`;
+    S('chk'+k,{o:P(t,a+1.25,.3)*(1-P(t,a+2.85,.25)),y:(1-P(t,a+1.25,.3))*10});
+    $('chk'+k).querySelector('i').style.transform=`scaleX(${P(t,a+1.3,1.55,E.io2)})`;
+    const dv=P(t,a+3.0,.5,E.o4);
+    S('pov'+k,{o:dv*(1-sout),x:-sout*110,s:L(1.06,1,dv)});
+    S('cap'+k,V(t,a+.2,last?46.4:b-.4,{dy:12,db:4}));
+    // mid column
+    S('sk'+k,V(t,a+.05,ex,{dy:16}));
+    S('sh'+k,V(t,a+.15,ex,{dy:24,db:8}));
+    c.sig.forEach((g,j)=>{
+      S(`r${k}_${j}`,V(t,a+.45+j*.16,ex+j*.05,{dx:70,dy:0,ox:-50,db:8,di:.75}));
+      const sk=P(t,a+1.75+j*.32,.45,E.back);S(`st${k}_${j}`,{o:P(t,a+1.75+j*.32,.2),s:L(.3,1,sk)});
+    });
+    const sc=clamp((t-(a+1.45))/1.35);S('scan'+k,{o:sc>0&&sc<1?Math.sin(sc*Math.PI):0,y:sc*340});
+    // right column
+    const pk=P(t,a+3.0,.65,E.back);S('pl'+k,{o:P(t,a+3.0,.2)*(1-P(t,ex,.45,E.i3)),s:L(.55,1,pk)*(1-P(t,ex,.45)*.08),b:P(t,ex,.45)*8});
+    const bk=clamp((t-(a+3.05))/.9);S('bu'+k,{o:bk>0&&bk<1?(1-bk)*.9:0,s:1+bk*.35});
+    S('sb'+k,V(t,a+3.35,ex,{dy:16}));
+    S('lt'+k,V(t,a+3.6,k===2?a+3.95:ex,{dy:16}));
+  });
+  // scenario 2: fingerprint scan then fail
+  { const a=SC[1].a, sp=((t-a-3.1)%1.1)/1.1; $('fpscan').style.top=(10+Math.abs(Math.sin(sp*Math.PI))*104)+'px';
+    const fail=t>=a+4.85; $('fpscan').style.opacity=fail?0:1;
+    $('fpc').style.borderColor=fail?'#E0393E':'#D9822B';$('fpc').style.background=fail?'rgba(224,57,62,.18)':'rgba(217,130,43,.18)';
+    $('fpc').querySelector('svg').setAttribute('stroke',fail?'#FF8A8E':'#F0A23B');
+    $('fph').textContent=fail?'Fingerprint didn’t match':'Verify it’s you';
+    $('fpp').innerHTML=fail?'Payment stopped.<br>The real owner has been notified.':'Owner’s fingerprint required<br>to send ₹85,000';
+    S('fpc',{s:fail?1+.08*Math.sin(clamp((t-a-4.85)/.35)*Math.PI*3):1}); }
+  // scenario 3: timer, telegram, cancel
+  { const a=SC[2].a, el2=Math.max(0,t-(a+3.1)), rem=Math.max(0,1800-Math.floor(el2*1.0));
+    $('tmr').textContent=String(Math.floor(rem/60)).padStart(2,'0')+':'+String(rem%60).padStart(2,'0');
+    document.querySelectorAll('.cdur').forEach(d=>{const s=372+Math.floor(Math.max(0,t-33.5));d.textContent=String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');});
+    S('tg',V(t,a+3.95,SC[2].b-.55,{dy:60,db:6,di:.75}));
+    const tp=clamp((t-(a+5.55))/.55);S('tgtap',{o:tp>0&&tp<1?(1-tp)*.85:0,s:.4+tp*1.2});
+    const cn=t>=a+5.7;$('tgc').style.background=cn?'#C62828':'#FDECEA';$('tgc').style.color=cn?'#fff':'#C62828';$('tgc').textContent=cn?'✓ Cancelled':'Cancel';
+    const sf=P(t,a+5.85,.5,E.io3);S('hold3',{o:1-sf,s:1-sf*.05,b:sf*6});S('safe3',{o:sf,s:L(.9,1,sf)});
+    $('pov2').firstElementChild.style.background=`linear-gradient(180deg,${rgb(LC([58,36,8],[16,64,34],sf))},${rgb(LC([26,18,6],[8,30,16],sf))})`; }
+  // scenario 4: attempt counter
+  { const a=SC[3].a, nA=Math.max(1,Math.min(15,Math.floor(1+P(t,a+.3,2.4,E.lin)*14)));
+    document.querySelectorAll('.att').forEach(d=>d.textContent=nA);
+    S('al3',V(t,a+4.05,46.5,{dy:16})); }
+
+  // ---------- S5 ANALYST (47-53.5) ----------
+  const aOut=P(t,53.0,.55,E.i3);
+  W(t,'a-head',47.15,53.0,{st:.06});
+  const wi=P(t,47.3,.8,E.o4);
+  S('a-win',{o:wi*(1-aOut),y:(1-wi)*80,s:L(.96,1,wi)*(1+aOut*.04),b:(1-wi)*10+aOut*12});
+  S('a-live',{o:.4+.6*Math.abs(Math.sin(t*3))});
+  FEED.forEach((f,i)=>{const r=$('fr'+i);S(r,V(t,47.65+(FEED.length-1-i)*.11,null,{dy:-24,db:5,di:.6}));
+    const sel=i===1?P(t,49.75,.3):0; r.style.background=`rgba(217,130,43,${(.16*sel).toFixed(3)})`;r.style.boxShadow=sel>0?`inset 0 0 0 2px rgba(217,130,43,${(.8*sel).toFixed(3)})`:'none';});
+  S('a-why',{o:P(t,49.9,.4),x:(1-P(t,49.9,.6,E.o4))*30});
+  WHY.forEach((w,i)=>{S('wy'+i,V(t,50.0+i*.12,null,{dy:14,db:4,di:.5}));$('wb'+i).style.transform=`scaleX(${P(t,50.1+i*.12,.7,E.o4)})`;$('wb'+i).style.transformOrigin='left';});
+  S('wy-btn',V(t,50.6,null,{dy:14,db:4}));
+  $('btn-ok').style.background=`rgba(46,158,79,${(.18+.5*P(t,51.75,.25)).toFixed(3)})`;
+  S('btn-ok',{s:1-.05*Math.sin(Math.PI*clamp((t-51.7)/.25))});
+  S('a-toast',V(t,51.95,null,{dy:24,db:6}));
+  $('a-spin').style.transform=`rotate(${Math.max(0,t-51.95)*300}deg)`;
+  // cursor
+  { let cx2=CUR[0][1],cy2=CUR[0][2];for(let i=0;i<CUR.length-1;i++){if(t>=CUR[i][0]&&t<=CUR[i+1][0]){const m=E.io3((t-CUR[i][0])/(CUR[i+1][0]-CUR[i][0]));cx2=L(CUR[i][1],CUR[i+1][1],m);cy2=L(CUR[i][2],CUR[i+1][2],m);}else if(t>CUR[i+1][0]){cx2=CUR[i+1][1];cy2=CUR[i+1][2];}}
+    let press=0;CLICKS.forEach(c=>{press=Math.max(press,Math.sin(Math.PI*clamp((t-c[0]+.08)/.2)));});
+    S('cursor',{o:P(t,48.7,.4)*(1-aOut),x:cx2-4,y:cy2-3,s:1-press*.15});
+    let cs=null;CLICKS.forEach(c=>{const k=(t-c[0])/.55;if(k>=0&&k<1)cs=[c,k];});
+    if(cs){S('cur-click',{o:(1-cs[1])*.9,x:cs[0][1],y:cs[0][2],s:.3+cs[1]*1.1});}else S('cur-click',{o:0});
+  }
+
+  // ---------- S6 CLOSE (53.5-60) ----------
+  W(t,'c-a',53.65,55.75,{st:.07});
+  W(t,'c-b',54.45,55.75,{st:.07});
+  ['c-t1','c-t2','c-t3'].forEach((id,i)=>{const k=P(t,56.95+i*.22,.6,E.o4);S(id,{o:k,y:(1-k)*24,b:(1-k)*6});});
+  S('c-tag',{o:t>56.9?1:0});
+  S('c-sub',V(t,57.7,null,{dy:14}));
+  S('c-team',V(t,58.05,null,{dy:18}));
+}
+window.render=render;
+render(parseFloat(location.hash.slice(1))||0);
+</script></body></html>

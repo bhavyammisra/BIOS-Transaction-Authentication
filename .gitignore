@@ -29,3 +29,6 @@ data/raw/
 
 # Claude personal settings (shared settings.json IS committed)
 .claude/settings.local.json
+
+# Promo preview stills
+promo/src/stills/
