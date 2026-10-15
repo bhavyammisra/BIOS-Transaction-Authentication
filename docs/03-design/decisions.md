@@ -37,3 +37,7 @@
 
 ## D-008 · 2026-10-15 · Working product name
 **Decision:** "Pramaan" (प्रमाण, "proof"). Can change.
+
+## D-009 · 2026-10-15 · Four response levels made real; ₹0 stack
+**Decision:** Pitch and build 4 levels: allow · fingerprint (WebAuthn passkey) · pause + family approval (n8n self-hosted + Telegram bot: hold → Approve/Cancel → timeout → label) · block. Add a replay simulator (our policy vs RBI's blanket 1-hour delay). Host the API on Render free tier (no card) instead of Cloud Run; in-memory profiles instead of Redis. n8n is only used *after* a decision, never in the scoring path.
+**Why:** Matches the promo video; makes the "typed challenge" idea visible in a demo; keeps running cost at ₹0 with no paid APIs (SMS/WhatsApp avoided). Supersedes the hosting/Redis parts of D-002.

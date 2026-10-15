@@ -127,10 +127,11 @@ def slide1(s):
     # team strip (top right, beside the logo)
     st, tf = box(s, 4.15, 0.66, 8.7, 0.9, "Team strip", fill=PANEL, radius=0.12, pad=0.12)
     add_par(tf, [("Team Caffeinated Nerds", 11.5, True, NAVY), ("   ·   Frontier · Fast and Secure Online Transaction Authentication   ·   Challenge ID: ________", 11, False, NAVY)], first=True)
-    for i, name in enumerate(["Bhavyam Misra", "Gunagye Jain", "Abhijay Nagal", "Shefali Sharma"]):
+    for i, (name, roll) in enumerate([("Bhavyam Misra", "______________"), ("Gunagye Jain", "1024030019"),
+                                      ("Abhijay Nagal", "______________"), ("Shefali Sharma", "______________")]):
         tb, ttf = textbox(s, 4.27 + i * 2.13, 1.01, 2.05, 0.45, f"Member {i+1}")
         add_par(ttf, [(name, 10.5, True, TEXT)], first=True)
-        add_par(ttf, [("Roll No: ______________", 10, False, MUTED)])
+        add_par(ttf, [("Roll No: " + roll, 10, False, MUTED)])
 
     # left column: problem / stakeholder / why
     tb, tf = textbox(s, 0.5, 2.82, 6.75, 3.6, "Problem text")
@@ -229,26 +230,27 @@ def slide3(s):
     for t in [("20+ signals", " (behaviour, device, transaction, receiver) scored against each user's own history"),
               ("Hybrid engine:", " policy rules + gradient-boosted model, with each signal's contribution explained"),
               ("Amount-aware:", " a ₹40 tea is never stopped; an ₹85k first-time transfer is checked closely"),
-              ("Typed challenges:", " biometric for a likely impostor; cooling-off + trusted contact for a likely coached victim")]:
+              ("4 levels of response:", " allow · fingerprint for a likely impostor · pause + family approval for a likely scam victim · block")]:
         add_par(tf, [(t[0], 12.5, True, TEXT), (t[1], 12.5, False, TEXT)], bullet=True, space_after=3)
     label(tf, "WHY THIS CLOSES THE GAP", space_before=6)
-    add_par(tf, [("An OTP can't stop someone who is being coached. A pause, a scam-specific warning and a trusted contact can. We use them ", 12.5, False, TEXT),
-                 ("only", 12.5, True, TEXT), (" when the context is risky, unlike RBI's proposed blanket 1-hour delay.", 12.5, False, TEXT)])
+    add_par(tf, [("An OTP can't stop someone who is being coached. A pause and a family member who can cancel can. We use them ", 12.5, False, TEXT),
+                 ("only", 12.5, True, TEXT), (" when the context is risky, unlike RBI's proposed blanket 1-hour delay. Built on free, open tools: ", 12.5, False, TEXT),
+                 ("₹0 running cost", 12.5, True, TEXT), (".", 12.5, False, TEXT)])
 
     # right: user interaction table
     tb, tf = textbox(s, 6.55, 2.8, 6.3, 0.3, "Scenarios label")
-    label(tf, "USER INTERACTION: the same ₹85,000 payment, four situations", first=True)
-    rows = [("Usual payee, own phone, normal typing", "ALLOW", GREEN, GREEN_T, "No extra step. Pays instantly."),
-            ("New phone, SIM swapped 20 h ago, new city", "CHALLENGE · biometric", AMBER, AMBER_T, "Impostor risk: the owner's fingerprint is needed."),
-            ("On a call, new UPI ID pasted, own phone", "CHALLENGE · hold + trusted contact", AMBER, AMBER_T, "Scam risk: 30-min pause + scam warning"),
-            ("Emulator + VPN, 15 attempts in 10 minutes", "BLOCK", RED, RED_T, "Bot / card-testing: stopped, analyst alerted.")]
+    label(tf, "USER INTERACTION: 4 levels · the same ₹85,000 payment, four situations", first=True)
+    rows = [("Usual payee, own phone, normal typing", "① ALLOW", GREEN, GREEN_T, "No extra step. Pays instantly."),
+            ("New phone, SIM swapped 20 h ago, new city", "② FINGERPRINT", AMBER, AMBER_T, "Impostor risk: owner's passkey biometric needed."),
+            ("On a call, new UPI ID pasted, own phone", "③ PAUSE + FAMILY", AMBER, AMBER_T, "Scam risk: held; son taps Cancel on Telegram"),
+            ("Emulator + VPN, 15 attempts in 10 minutes", "④ BLOCK", RED, RED_T, "Bot / card-testing: stopped, analyst alerted.")]
     y = 3.13
     for i, (ctx, dec, col, tint, why) in enumerate(rows):
         b, tf = box(s, 6.55, y, 6.3, 0.78, f"Scenario {i+1}", fill=tint, radius=0.1, pad=0.13, anchor=MSO_ANCHOR.MIDDLE)
         tf.margin_right = Inches(2.72)
         add_par(tf, [(ctx, 12, True, TEXT)], first=True)
         add_par(tf, [(why, 11, False, MUTED)])
-        pill(s, 10.25, y + 0.16, 2.5, 0.46, f"Decision {i+1}", dec, col, size=10 if len(dec) > 10 else 12)
+        pill(s, 10.25, y + 0.16, 2.5, 0.46, f"Decision {i+1}", dec, col, size=11.5)
         y += 0.87
     b, tf = box(s, 6.55, y + 0.03, 6.3, 0.45, "Analyst note", fill=PANEL, radius=0.15, pad=0.13, anchor=MSO_ANCHOR.MIDDLE)
     add_par(tf, [("Analysts", 11.5, True, NAVY), (" see every decision live with its “why”; their feedback retrains the model.", 11.5, False, TEXT)], first=True)
@@ -257,7 +259,7 @@ def slide3(s):
              "Two things make it different. First, thresholds depend on the amount: a 40-rupee tea is never stopped, an 85,000-rupee first-time transfer is checked closely. "
              "Second, the challenge depends on the kind of risk. Look at the same 85,000-rupee payment in four situations. Usual payee, own phone: allowed. "
              "New phone and a SIM swap yesterday: that's an impostor, so we ask for the owner's fingerprint. "
-             "Own phone at home, but on a call and pasting a new UPI ID: that's a coached victim. An OTP won't help, so we pause it for 30 minutes and ask a trusted contact. "
+             "Own phone at home, but on a call and pasting a new UPI ID: that's a coached victim. An OTP won't help, so we pause it and her son gets an Approve or Cancel message on Telegram. "
              "An emulator firing 15 attempts: blocked.")
 
 # ---------------------------------------------------------------- slide 4
@@ -274,14 +276,14 @@ def slide4(s):
     b, tf = box(s, 2.83, top, 1.8, H, "D2 API", fill=PANEL, line=ICE, radius=0.08, pad=0.12)
     add_par(tf, [("2 · API", 10.5, True, MUTED)], first=True, space_after=2)
     add_par(tf, [("POST /v1/authenticate", 12, True, NAVY)], space_after=4)
-    add_par(tf, [("FastAPI on Cloud Run: validate, start timer. Over 150 ms → falls back to standard 2FA", 10.5, False, TEXT)])
+    add_par(tf, [("FastAPI on Render (free tier): validate, start timer. Over 150 ms → falls back to standard 2FA", 10.5, False, TEXT)])
     # 3 features
     b, tf = box(s, 4.96, top, 2.0, 1.32, "D3 Features", fill=PANEL, line=ICE, radius=0.08, pad=0.12)
     add_par(tf, [("3 · FEATURES", 10.5, True, MUTED)], first=True, space_after=2)
     add_par(tf, [("20+ features vs the user's own baseline", 11.5, True, NAVY)], space_after=2)
     add_par(tf, [("“8× usual amount”, new payee, new device…", 10.5, False, TEXT)])
     b, tf = box(s, 4.96, top + 1.62, 2.0, 0.6, "D3b Profile store", fill=WHITE, line=NAVY, radius=0.15, pad=0.08, anchor=MSO_ANCHOR.MIDDLE)
-    add_par(tf, [("Profile store (Redis)", 10.5, True, NAVY)], first=True, align=PP_ALIGN.CENTER)
+    add_par(tf, [("Profile store (in-memory)", 10.5, True, NAVY)], first=True, align=PP_ALIGN.CENTER)
     add_par(tf, [("habits · devices · payees · receiver risk", 9.5, False, TEXT)], align=PP_ALIGN.CENTER)
     # 4 engine
     ex = 7.29; ew = 3.15
@@ -300,7 +302,8 @@ def slide4(s):
     add_par(tf, [("5 · OUTPUT", 10.5, True, MUTED)], first=True, space_after=4)
     for txt, col in (("ALLOW", GREEN), ("CHALLENGE (type)", AMBER), ("BLOCK", RED)):
         add_par(tf, [(txt, 11.5, True, col)], space_after=1)
-    add_par(tf, [("+ score, top-3 reasons, latency, model version", 10.5, False, TEXT)], space_before=4)
+    add_par(tf, [("+ score, top-3 reasons, latency", 10.5, False, TEXT)], space_before=4)
+    add_par(tf, [("Holds → n8n → family on Telegram", 10.5, True, NAVY)], space_before=3)
     # arrows main flow
     mid = top + 0.75
     arrow(s, 2.5, mid, 2.83, mid, "A1"); arrow(s, 4.63, mid, 4.96, mid, "A2")
@@ -310,14 +313,14 @@ def slide4(s):
     # what's built strip
     b, tf = box(s, 0.5, 5.12, 12.35, 0.42, "Built strip", fill=GREEN_T, radius=0.3, pad=0.14, anchor=MSO_ANCHOR.MIDDLE)
     add_par(tf, [("Built during the hack: ", 11, True, GREEN),
-                 ("SDK + demo app, API, feature builder, rules + LightGBM + TreeSHAP, cost policy, event log, live dashboard, cloud deploy, load test.   ", 11, False, TEXT),
+                 ("SDK + demo app, API, risk engine, passkey fingerprint, n8n + Telegram family loop, replay simulator, live dashboard, deploy.   ", 11, False, TEXT),
                  ("Mocked: ", 11, True, AMBER), ("bank/NPCI rails, FRI & mule feeds, *phone call-state.", 11, False, TEXT)], first=True)
 
     # bottom panels
     panels = [
-        ("STACK", [("Python 3.11 · FastAPI · LightGBM · SHAP · Redis", False),
-                   ("Supabase Postgres (event log, realtime) · React (Vite) on Vercel · Docker → Google Cloud Run", False),
-                   ("Log → dashboard: live feed, “why” panel, latency, threshold sliders. Feedback API → labels → retrain.", False)]),
+        ("STACK (all free, ₹0 running cost)", [("Python · FastAPI · LightGBM · SHAP on Render (no card) · React on Vercel · Supabase free tier", False),
+                   ("n8n (self-hosted) + Telegram Bot API: hold → family Approve/Cancel → timeout → label", False),
+                   ("WebAuthn passkeys for fingerprint · replay simulator: our policy vs RBI's blanket delay", False)]),
         ("DATA", [("No public dataset has all three signal families → synthetic generator: 5k users, 30 days, 4 labelled attack types + hard negatives (travel, new phone, rent)", False),
                   ("Sanity-checked on IEEE-CIS (590k txns) & PaySim · *call state: mobile SDK, toggles in demo", False)]),
         ("DECISION RULE", [("Block if p ≥ 0.90 or a hard rule fires", False),
@@ -332,12 +335,12 @@ def slide4(s):
             add_par(tf, [(t, 10.5, False, TEXT)], bullet=True, space_after=2)
         x += w + 0.175
     notes(s, "Here's how it works. One: the payment app, with our small SDK, sends the transaction, device info and session behaviour, like typing rhythm, time on the confirm screen, a pasted payee, and on mobile whether a call or screen-share is active. "
-             "Two: our FastAPI service on Cloud Run validates it and starts a timer. "
-             "Three: we build 20-plus features against this user's own history from a Redis profile store. "
+             "Two: our FastAPI service, on Render's free tier, validates it and starts a timer. "
+             "Three: we build 20-plus features against this user's own history from an in-memory profile store. "
              "Four, the risk engine: hard rules first, then a LightGBM model gives a fraud probability, TreeSHAP tells us each signal's contribution, the strongest family tells us the risk type, and a cost policy picks the decision. "
              "The thresholds tighten as the amount grows, and the challenge type is whichever costs least for that risk type. "
              "Five: allow, challenge or block, plus reasons and latency. If we ever take longer than 150 milliseconds we fall back to standard 2FA, so we never fail open. "
-             "Everything is logged to Supabase and streamed to a live dashboard. Our training data is synthetic, and we say so: no public dataset has these signals together.")
+             "For a likely scam, the hold goes to an n8n workflow that messages a family member on Telegram to approve or cancel; for a likely impostor, a passkey fingerprint check. Everything is free and open, so running cost is zero. Our training data is synthetic, and we say so: no public dataset has these signals together.")
 
 # ---------------------------------------------------------------- slide 5
 def slide5(s):
@@ -350,15 +353,15 @@ def slide5(s):
     # col 1
     b, tf = box(s, 0.5, 3.32, 3.97, 3.9, "Build body", fill=PANEL, radius=0.05, pad=0.15)
     add_par(tf, [("A working prototype by the end of the hack:", 11.5, True, NAVY)], first=True, space_after=3)
-    for t in ["Live /v1/authenticate on Cloud Run, with fail-safe",
-              "Rules + LightGBM + TreeSHAP reasons + cost policy",
-              "Demo UPI-style app + JS SDK + scenario toggles",
-              "Dashboard: live feed, “why” panel, latency, sliders",
-              "Synthetic data (4 attack types), scenario tests, load test"]:
+    for t in ["Live /v1/authenticate (Render, free) with fail-safe",
+              "Risk engine: rules + LightGBM + TreeSHAP + cost policy",
+              "4 levels live: passkey fingerprint, n8n + Telegram family loop",
+              "Demo UPI app + SDK; dashboard with “why” panel",
+              "Replay simulator vs RBI's blanket delay; synthetic data"]:
         add_par(tf, [(t, 12, False, TEXT)], bullet=True, space_after=3)
     add_par(tf, [("Plan (hack hours)", 11.5, True, NAVY)], space_before=8, space_after=1)
-    add_par(tf, [("H0–6 data + scaffolding · H6–12 engine + API · H8–16 app + dashboard · H12–18 tests + metrics · H18+ deploy + rehearse", 11, False, TEXT)], space_after=6)
-    add_par(tf, [("Owners: ", 11, True, NAVY), ("Bhavyam API/cloud · Gunagye ML · Abhijay app/SDK · Shefali dashboard/eval", 11, False, TEXT)])
+    add_par(tf, [("H0–6 data + scaffolding · H6–12 engine + API · H8–16 app, passkeys, n8n loop · H12–18 dashboard, simulator, tests · H18+ deploy + rehearse", 11, False, TEXT)], space_after=6)
+    add_par(tf, [("Cost: ", 11, True, NAVY), ("₹0, free tiers + open source, no paid APIs.", 11, False, TEXT)])
     # col 2
     b, tf = box(s, 4.69, 3.32, 3.97, 3.9, "Risks body", fill=PANEL, radius=0.05, pad=0.15)
     risks = [("Data realism.", " Synthetic ≠ real fraud.", " → hard negatives, per-type metrics, IEEE-CIS/PaySim check; retrain on bank history in a pilot."),
@@ -385,7 +388,7 @@ def slide5(s):
         y += 0.88
     tb, tf = textbox(s, 8.88, 6.85, 3.97, 0.35, "Metric note")
     add_par(tf, [("Targets, measured live on the dashboard against held-out synthetic data.", 10, False, MUTED, True)], first=True)
-    notes(s, "What we'll actually build in the hack: a live authenticate API on Cloud Run, the full risk engine, a demo UPI-style app with our SDK, a live dashboard, and a synthetic dataset with four attack types plus scenario tests and a load test. "
+    notes(s, "What we'll actually build in the hack: a live authenticate API on a free host, the full risk engine, all four response levels working, including a real passkey fingerprint check and an n8n plus Telegram loop where a family member can cancel a held payment, a dashboard, and a replay simulator comparing us with RBI's blanket delay. All on free tools, zero running cost. "
              "We're honest about the risks. Our data is synthetic, so we add hard negatives, report metrics per attack type and sanity-check on public datasets. "
              "Call and screen-share state needs a mobile SDK, so missing signals count as unknown, never safe. "
              "False positives hurt real people, so we only block at very high confidence and keep challenges under five percent. "

@@ -64,7 +64,9 @@
 | Headroom / network | remainder |
 
 ## Deployment ("cloud authentication service")
-- API: Docker image → **Google Cloud Run** (autoscaling, public HTTPS URL). Render is the fallback.
+- API: Docker → **Render free tier** (no card; warm it before demos). Profiles in-memory (D-009).
+- Guardian loop: **n8n (self-hosted) + Telegram bot**. Scam-risk holds trigger an Approve/Cancel message to the user's family member; timeout cancels; the outcome becomes a label.
+- Fingerprint level: **WebAuthn passkeys** in the demo app.
 - Event log: **Supabase Postgres** (the team already knows it). Realtime channel feeds the dashboard.
 - Dashboard + demo app: React (Vite) on **Vercel**.
 - Model artefact (`model.txt` + feature list + version) ships inside the image. `model_version` is in every response.

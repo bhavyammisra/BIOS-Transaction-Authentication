@@ -12,7 +12,7 @@ setup → research → design → plan → **`PITCH (screening)`** → build (ha
 - **Design v1** (`docs/03-design/`): architecture, risk engine (hybrid rules + LightGBM + TreeSHAP; amount-aware thresholds; challenge type by risk type), API contract v1, decisions D-002…D-008. Working name **Pramaan**.
 - **Plan** (`docs/04-plan/`): team, hack timeline, tasks, risks & metrics.
 - **Promo video** (60 s, 1080p60, silent) + timed VO script: `promo/` (see `promo/SCRIPT.md`).
-- **Screening deck** built in the BIOS template: `docs/05-pitch/Pramaan_BIOS_Screening.pptx` (+ speaker notes).
+- **Screening deck** updated to match the video: 4 levels (allow · fingerprint · pause + family on Telegram · block), n8n + passkeys + replay simulator, ₹0 stack (D-009). `docs/05-pitch/Pramaan_BIOS_Screening.pptx`.
 
 ## In progress
 | Who | What |
