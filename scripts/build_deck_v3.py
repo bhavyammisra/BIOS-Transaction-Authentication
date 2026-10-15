@@ -1,5 +1,5 @@
 """Visual (v3) Pramaan deck: less text, bigger type, icons and diagrams.
-Usage: python build_deck_v3.py <v2 deck.pptx> <out.pptx> <icons dir>
+Usage: python build_deck_v3.py <v2 deck.pptx> <out.pptx> <icons dir> [--n8n]   (--n8n builds v4)
 Starts from the v2 deck (keeps the BIOS template shapes and speaker notes) and redraws the content.
 Icons are PNGs named <icon>_<HEX>.png (rendered from react-icons)."""
 import sys, os
@@ -13,6 +13,8 @@ from build_deck import (NAVY, ICE, PANEL, TEXT, MUTED, GREEN, GREEN_T, AMBER, AM
                         BODY, HEAD, rgb, remove, add_par, textbox, box, pill, arrow, label, heading, sources)
 
 ICON_DIR = None
+N8N = False  # v4: show where n8n is used (--n8n)
+N8N_C, N8N_T = "EA4B71", "FDE8EE"  # n8n brand coral + tint: every n8n mention in v4 is highlighted
 L, C = PP_ALIGN.LEFT, PP_ALIGN.CENTER
 
 def icon(slide, name, x, y, size, color=NAVY):
@@ -161,7 +163,12 @@ def slide3(s):
         badge(s, ic, 0.5, y, 0.42)
         text(s, 1.05, y, 5.2, 0.42, f"Diff {i+1}", [(t, 13, False, TEXT)], anchor=MSO_ANCHOR.MIDDLE)
     b, tf = box(s, 0.5, 6.42, 5.75, 0.8, "Closes gap", fill=GREEN_T, radius=0.14, pad=0.16, anchor=MSO_ANCHOR.MIDDLE)
-    add_par(tf, [("An OTP can't stop a coached victim. A pause and a family member who can cancel can, ", 12, False, TEXT),
+    if N8N:
+        add_par(tf, [("An OTP can't stop a coached victim. A pause and a family member who can cancel (", 12, False, TEXT),
+                     ("n8n", 12, True, N8N_C), (" → Telegram", 12, True, NAVY), (") can, ", 12, False, TEXT),
+                     ("used only when the context is risky.", 12, True, GREEN)], first=True)
+    else:
+      add_par(tf, [("An OTP can't stop a coached victim. A pause and a family member who can cancel can, ", 12, False, TEXT),
                  ("used only when the context is risky.", 12, True, GREEN)], first=True)
 
     text(s, 6.55, 2.8, 6.3, 0.3, "Scen label", [("THE SAME ₹85,000 PAYMENT · FOUR SITUATIONS", 11, True, NAVY)])
@@ -225,20 +232,25 @@ def slide4(s):
     arrow(s, 2.5, mid, 2.83, mid, "A1"); arrow(s, 4.63, mid, 4.96, mid, "A2")
     arrow(s, 6.96, mid, 7.29, mid, "A3"); arrow(s, 10.44, mid, 10.77, mid, "A4")
 
-    b, tf = box(s, 0.5, 4.88, 12.35, 0.4, "Built strip", fill=GREEN_T, radius=0.3, pad=0.14, anchor=MSO_ANCHOR.MIDDLE)
-    add_par(tf, [("Built in the hack: ", 11, True, GREEN), ("SDK + demo app · API · risk engine · passkeys · n8n + Telegram loop · dashboard     ", 11, False, TEXT),
-                 ("Mocked: ", 11, True, AMBER), ("bank/NPCI rails, *call state", 11, False, TEXT)], first=True, align=L)
+    if N8N:
+        n8n_lane(s)
+    else:
+        b, tf = box(s, 0.5, 4.88, 12.35, 0.4, "Built strip", fill=GREEN_T, radius=0.3, pad=0.14, anchor=MSO_ANCHOR.MIDDLE)
+        add_par(tf, [("Built in the hack: ", 11, True, GREEN), ("SDK + demo app · API · risk engine · passkeys · n8n + Telegram loop · dashboard     ", 11, False, TEXT),
+                     ("Mocked: ", 11, True, AMBER), ("bank/NPCI rails, *call state", 11, False, TEXT)], first=True, align=L)
 
     # stack chips
-    by = 5.42
+    by = 5.5 if N8N else 5.42
     text(s, 0.5, by, 4.0, 0.3, "Stack label", [("STACK · ₹0 RUNNING COST", 11, True, NAVY)])
     chips = [("code", "Python · FastAPI"), ("cpu", "LightGBM + SHAP"), ("eye", "React dashboard"),
              ("db", "Supabase"), ("send", "n8n + Telegram"), ("fp", "WebAuthn passkeys")]
     for k, (ic, t) in enumerate(chips):
         x = 0.5 + (k % 2) * 2.03; y = by + 0.36 + (k // 2) * 0.5
-        b, _ = box(s, x, y, 1.95, 0.42, f"Chip {k+1}", fill=PANEL, radius=0.3)
-        icon(s, ic, x + 0.12, y + 0.08, 0.26, NAVY)
-        text(s, x + 0.44, y, 1.5, 0.42, f"Chip {k+1} text", [(t, 10.5, True, TEXT)], anchor=MSO_ANCHOR.MIDDLE)
+        hi = N8N and t.startswith("n8n")
+        b, _ = box(s, x, y, 1.95, 0.42, f"Chip {k+1}", fill=N8N_T if hi else PANEL, line=N8N_C if hi else None, radius=0.3)
+        icon(s, ic, x + 0.12, y + 0.08, 0.26, N8N_C if hi else NAVY)
+        runs = [("n8n", 10.5, True, N8N_C), (t[3:], 10.5, True, TEXT)] if hi else [(t, 10.5, True, TEXT)]
+        text(s, x + 0.44, y, 1.5, 0.42, f"Chip {k+1} text", runs, anchor=MSO_ANCHOR.MIDDLE)
     # data tiles
     text(s, 4.68, by, 3.9, 0.3, "Data label", [("SYNTHETIC DATA (NO PUBLIC SET HAS THESE SIGNALS)", 11, True, NAVY)])
     for k, (big, small) in enumerate((("5k", "users"), ("30", "days"), ("4", "attack types"))):
@@ -269,6 +281,28 @@ def slide4(s):
         ser.marker.format.fill.solid(); ser.marker.format.fill.fore_color.rgb = rgb(col); ser.marker.format.line.fill.background()
         ser.marker.size = 5
 
+def n8n_lane(s):
+    """Where n8n is used: the guardian loop that runs after a HOLD decision, off the scoring path."""
+    y, h = 4.83, 0.48
+    b, tf = box(s, 0.5, y, 2.05, h, "n8n head", fill=N8N_C, radius=0.2, pad=0.08, anchor=MSO_ANCHOR.MIDDLE)
+    tf.margin_left = Inches(0.46)
+    add_par(tf, [("POWERED BY n8n", 11, True, WHITE)], first=True, align=L)
+    add_par(tf, [("guardian loop", 8.5, False, WHITE, True)], align=L)
+    icon(s, "refresh", 0.6, y + 0.13, 0.26, WHITE)
+    steps = [("pause", AMBER, "Scam-risk HOLD"), ("zap", NAVY, "n8n workflow triggered"),
+             ("send", NAVY, "Telegram: Approve / Cancel"), ("clock", NAVY, "No reply in 30 min → cancel"),
+             ("db", GREEN, "Outcome → training label")]
+    x, w, gap = 2.75, 1.884, 0.17
+    for k, (ic, col, t) in enumerate(steps):
+        hi = t.startswith("n8n")
+        b, _ = box(s, x, y, w, h, f"n8n step {k+1}", fill=N8N_T if hi else PANEL, line=N8N_C if hi else ICE, radius=0.2)
+        icon(s, ic, x + 0.1, y + 0.12, 0.26, N8N_C if hi else col)
+        runs = [("n8n", 10, True, N8N_C), (t[3:], 10, True, TEXT)] if hi else [(t, 10, True, TEXT)]
+        text(s, x + 0.42, y, w - 0.46, h, f"n8n step {k+1} text", runs, anchor=MSO_ANCHOR.MIDDLE)
+        if k < 4:
+            arrow(s, x + w, y + h / 2, x + w + gap, y + h / 2, f"n8n arrow {k+1}", width=1.25)
+        x += w + gap
+
 # ---------------------------------------------------------------- slide 5
 def slide5(s):
     heading(s, headline="> A deployed, working prototype in the hack, honest about its limits")
@@ -280,11 +314,12 @@ def slide5(s):
         icon(s, ic, x + 0.15, 2.9, 0.26, WHITE)
     # col 1: checklist + timeline
     b, _ = box(s, 0.5, 3.36, 3.97, 3.86, "Build body", fill=PANEL, radius=0.05)
-    items = ["Live API with fail-safe to 2FA", "Rules + LightGBM + TreeSHAP", "Passkey fingerprint check", "Telegram trusted-contact loop", "Dashboard with “why” panel"]
+    items = ["Live API with fail-safe to 2FA", "Rules + LightGBM + TreeSHAP", "Passkey fingerprint check", "n8n + Telegram trusted-contact loop" if N8N else "Telegram trusted-contact loop", "Dashboard with “why” panel"]
     for k, t in enumerate(items):
         y = 3.5 + k * 0.44
         badge(s, "check", 0.65, y + 0.04, 0.3, fill=GREEN, ratio=0.6)
-        text(s, 1.07, y, 3.3, 0.38, f"Build {k+1}", [(t, 12.5, False, TEXT)], anchor=MSO_ANCHOR.MIDDLE)
+        runs = [("n8n", 12.5, True, N8N_C), (t[3:], 12.5, False, TEXT)] if N8N and t.startswith("n8n") else [(t, 12.5, False, TEXT)]
+        text(s, 1.07, y, 3.3, 0.38, f"Build {k+1}", runs, anchor=MSO_ANCHOR.MIDDLE)
     text(s, 0.65, 5.78, 3.7, 0.3, "Timeline label", [("24-HOUR PLAN", 10.5, True, NAVY)])
     segs = [("Data", "H0–6", "3F51B5"), ("Engine", "H6–12", "2C3A86"), ("App + UI", "H12–18", "1E2761"), ("Deploy", "H18–24", GREEN)]
     for k, (t, h, col) in enumerate(segs):
@@ -331,4 +366,5 @@ def main(src, out):
 
 if __name__ == "__main__":
     ICON_DIR = sys.argv[3]
+    N8N = "--n8n" in sys.argv[4:]
     main(sys.argv[1], sys.argv[2])
